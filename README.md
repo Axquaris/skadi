@@ -9,8 +9,11 @@ https://localxpose.io/
 
 
 ## Notes
-https://socket.io/blog/socket-io-p2p/
+### Libraries
+Networking: https://socket.io/docs/v4/tutorial/step-1
+Server: https://expressjs.com/
 
-
-https://expressjs.com/en/starter/installing.html
+### Inspirations
 https://madewithsvelte.com/game
+https://github.com/woutdp/geoquest
+Simple mp game dev: https://www.youtube.com/watch?v=HXquxWtE5vA&ab_channel=ChrisCourses

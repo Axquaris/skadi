@@ -15,19 +15,23 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html')
 })
 
+// Game state variables
 const backEndPlayers = {}
 const backEndProjectiles = {}
 
+// Game config variables
 const SPEED = 5
 const RADIUS = 10
 const PROJECTILE_RADIUS = 5
 let projectileId = 0
 
+// Handle new connection, given socket to that player
 io.on('connection', (socket) => {
   console.log('a user connected')
 
-  io.emit('updatePlayers', backEndPlayers)
+  io.emit('updatePlayers', backEndPlayers) // Tell all players about joiner
 
+  // Player action event listener: shooting
   socket.on('shoot', ({ x, y, angle }) => {
     projectileId++
 
@@ -36,6 +40,7 @@ io.on('connection', (socket) => {
       y: Math.sin(angle) * 5
     }
 
+    // Adds new projectile to backend game state
     backEndProjectiles[projectileId] = {
       x,
       y,
@@ -46,6 +51,7 @@ io.on('connection', (socket) => {
     console.log(backEndProjectiles)
   })
 
+  // Player action event listener: starting game
   socket.on('initGame', ({ username, width, height }) => {
     backEndPlayers[socket.id] = {
       x: 1024 * Math.random(),
@@ -65,12 +71,14 @@ io.on('connection', (socket) => {
     backEndPlayers[socket.id].radius = RADIUS
   })
 
+  // Player action event listener: discnnecting
   socket.on('disconnect', (reason) => {
     console.log(reason)
     delete backEndPlayers[socket.id]
     io.emit('updatePlayers', backEndPlayers)
   })
 
+  // Player action event listener: movement keypress
   socket.on('keydown', ({ keycode, sequenceNumber }) => {
     const backEndPlayer = backEndPlayers[socket.id]
 
@@ -113,6 +121,10 @@ io.on('connection', (socket) => {
       backEndPlayers[socket.id].y = 576 - backEndPlayer.radius
   })
 })
+
+// ============== //
+// CORE GAME LOOP //
+// ============== //
 
 // backend ticker
 setInterval(() => {
@@ -162,8 +174,8 @@ setInterval(() => {
   io.emit('updatePlayers', backEndPlayers)
 }, 15)
 
-server.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+// server.listen(port, () => {
+//   console.log(`Example app listening on port ${port}`)
+// })
 
 console.log('server did load')

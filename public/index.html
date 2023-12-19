@@ -1,108 +1,153 @@
-<html>
-  <head>
-    <style>
-      body {
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-rendering: optimizeLegibility;
-        margin: 0;
-        background: #94a3b8;
-      }
+<!DOCTYPE html>
+<html lang="en">
 
-      input::placeholder {
-        color: #94a3b8;
-      }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <title>Skadi Game UI</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
 
-      canvas {
-        width: 1024px;
-        height: 576px;
-        background-image: url('/img/webb-dark.png');
-      }
-    </style>
-  </head>
+<body>
+    <script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
 
-  
-  <body style="display: flex; align-items: center; justify-content: center">
-    <div>
-      <div
-        style="
-          position: absolute;
-          color: white;
-          padding: 8px;
-          font-family: sans-serif;
-          font-size: 14px;
-          user-select: none;
-          background: rgba(0, 0, 0, 0.5);
-        "
-      >
-        <div style="margin-bottom: 8px">Leaderboard</div>
-        <div id="playerLabels"></div>
-      </div>
-      <canvas></canvas>
 
-      <!-- username input -->
-      <div
-        style="
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
-        "
-      >
+    <!-- Lobby / Game init page -->
+    <div id="lobbyPanel" style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      ">
+
         <form id="usernameForm">
-          <div>
-            <input
-              id="usernameInput"
-              type="text"
-              placeholder="Username"
-              style="
-                padding: 12px;
-                border-radius: 20px;
-                border: none;
-                background: #475569;
-                color: #cbd5e1;
-              "
-            />
-          </div>
-          <div style="text-align: center; margin-top: 8px">
-            <button
-              style="
-                padding: 8px 20px;
-                border-radius: 100px;
-                border: none;
-                background-image: linear-gradient(
-                  to right,
-                  rgb(6, 182, 212),
-                  rgb(59, 130, 246)
-                );
-                color: white;
-                cursor: pointer;
-              "
-            >
-              Start!
-            </button>
-          </div>
+            <!-- Username Input -->
+            <div>
+                <input id="usernameInput" type="text" placeholder="Username" style="
+              padding: 12px;
+              border-radius: 20px;
+              border: none;
+              background: #475569;
+              color: #cbd5e1;
+            " />
+            </div>
+
+            <!-- Start Button -->
+            <div style="text-align: center; margin-top: 8px">
+                <button style="
+              padding: 8px 20px;
+              border-radius: 100px;
+              border: none;
+              background-image: linear-gradient(
+                to right,
+                rgb(6, 109, 212),
+                rgb(59, 130, 246)
+              );
+              color: white;
+              cursor: pointer;
+            ">
+                    Start!
+                </button>
+            </div>
         </form>
-      </div>
-      <!-- username input end -->
     </div>
 
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.2/gsap.min.js"
-      integrity="sha512-kVlGhj2qFy+KBCFuvjBJTGUMxbdqJKs4yK2jh0e0VPhWUPiPC87bzm4THmaaIee3Oj7j6sDpTTgm2EPPiESqBg=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
-    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-    <script src="./js/classes/Enemy.js"></script>
-    <script src="./js/classes/Player.js"></script>
-    <script src="./js/classes/Particle.js"></script>
-    <script src="./js/classes/Projectile.js"></script>
-    <script src="./js/frontend.js"></script>
-    <script src="./js/eventListeners.js"></script>
-  </body>
+
+    <!-- Gameplay UI -->
+    <div id="gamePanel" style="display: none;">
+        <div id="resources">
+            <div id="population-ui" class="resource" style="background-color: rgb(186, 108, 84);">Population</div>
+            <div id="food-ui" class="resource" style="background-color: #125d31;">Food</div>
+            <div id="energy-ui" class="resource" style="background-color: #d3bc08;">Energy</div>
+            <div id="materials-ui" class="resource" style="background-color: #6c3833;">Materials</div>
+            <div id="supplies-ui" class="resource" style="background-color: #4e3b7e;">Supplies</div>
+            <div id="weapons-ui" class="resource" style="background-color: #c21319;">Weapons</div>
+        </div>
+
+        <!-- Main body -->
+        <div class="row" style="padding: 10px; border-radius: 5px;">
+            <!-- Main body, Left column -->
+            <div class="col-10 bordered">
+                <!-- City overview -->
+                <div style="padding-top: 5px; margin-top: 10px;">
+                    <h3 id="origin-ui" style="text-align: left;">City name</h3>
+                    <div id="building-ui">
+                        <div class="row sink">
+                            <h5>City Core</h5>
+                            <div class="row">
+                                <div class="col-4">Powerplant</div>
+                                <div class="col-4">Residential</div>
+                                <div class="col-4">Administrative</div>
+                            </div>
+                        </div>
+                        <div class="row sink">
+                            <h5>Agriponics</h5>
+                            <div class="row">
+                                <div class="col-4">+X food per day</div>
+                                <div class="col-4"></div>
+                                <div class="col-4"></div>
+                            </div>
+                        </div>
+                        <div class="row sink">
+                            <h5>Supply Plant</h5>
+                            <div class="row">
+                                <div class="col-4">-X ore +Y supply per day</div>
+                                <div class="col-4"></div>
+                                <div class="col-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outpost overview -->
+                <div style="padding-top: 10px; margin-top: 10px;">
+                    <h3 id="origin-ui" style="text-align: left;">Outposts</h3>
+                    <div id="outpost-ui">
+                        <div class="row sink">
+                            <h5>Crash Site</h5>
+                        </div>
+                        <div class="row sink">
+                            <h5>Metals Mine</h5>
+                        </div>
+                        <div class="row sink">
+                            <h5>Hunting Grounds</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Main body, right column -->
+            <div class="col-2 bordered">
+                <!-- Player overview -->
+                <div style="
+                    display: flex;
+                    flex-direction: column;
+                    margin-top: 10px;
+                ">
+                    <h3>Players</h3>
+                    <div id="players-ui" class="sink" style="height: 256px"></div>
+                </div>
+                <!-- Trade overview -->
+                <div style="
+                    border-top: 1px;
+                    margin-top: 10px;
+                ">
+                    <h3>Trade</h3>
+                    <div id="trade-ui" class="sink" style="height: 256px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./js/client.js" type="module"></script>
+</body>
+
 </html>

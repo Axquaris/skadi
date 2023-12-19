@@ -1,4 +1,4 @@
-import { Player } from "./classes/Player.js"
+import { Player } from "./classes/Player"
 
 let cfg = {
   "port" : 3000,

@@ -65,7 +65,7 @@
 
     <!-- Gameplay UI -->
     <div id="gamePanel" style="display: none;">
-        <div id="resources">
+        <div class="resources">
             <div id="population-ui" class="resource" style="background-color: rgb(186, 108, 84);">Population</div>
             <div id="food-ui" class="resource" style="background-color: #125d31;">Food</div>
             <div id="energy-ui" class="resource" style="background-color: #d3bc08;">Energy</div>
@@ -75,12 +75,17 @@
         </div>
 
         <!-- Main body -->
-        <div class="row" style="padding: 10px; border-radius: 5px;">
+        <div class="row" style="padding: 10px;">
             <!-- Main body, Left column -->
-            <div class="col-10 bordered">
+            <div class="col-10">
                 <!-- City overview -->
+                <h3 id="origin-ui" style="text-align: left;">
+                    City name
+                </h3>
                 <div style="padding-top: 5px; margin-top: 10px;">
-                    <h3 id="origin-ui" style="text-align: left;">City name</h3>
+                    <h3 id="origin-ui" style="text-align: left;">
+                        Buildings
+                    </h3>
                     <div id="building-ui">
                         <div class="row sink">
                             <h5>City Core</h5>

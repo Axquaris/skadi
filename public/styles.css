@@ -15,7 +15,7 @@ body {
     /* padding: 5px; */
 }
 
-#resources {
+.resources {
     display: flex;
     justify-content: space-around;
     background-color: #212a35;

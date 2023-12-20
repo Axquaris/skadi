@@ -1,6 +1,10 @@
-const express = require('express')
-const http = require('http')
-const { Server } = require('socket.io')
+import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
+// const express = require('express')
+// const Player = require('./public/js/classes/Player.js')
+// const http = require('http')
+// const { Server } = require('socket.io')
 
 let cfg = {
   "port" : 3000,

@@ -11,7 +11,6 @@ export class R {
 
 export class Building {
     static workersNeeded = 0
-
     static resourceChange = nj.array([0, 0, 0, 0, 0, 0])
 
     constructor() {
@@ -19,17 +18,15 @@ export class Building {
     }
 
     dailyUpdate(currentResources) {
-        var workerFulfilment = Math.max(this.workersNeeded / this.workers, 1)
-        console.log(this.resourceChange)
+        var workerFulfilment = Math.max(this.constructor.workersNeeded / this.workers, 1)
         
-        var resourceChange = this.resourceChange * workerFulfilment
+        var resourceChange = nj.multiply(this.constructor.resourceChange, workerFulfilment)
         
-        if (resourceChange.get(R.energy) > 0) {
-            resourceChange.set(R.energy, this.resourceChange.get(R.energy) * (1 + workerFulfilment) * .5)
+        if (resourceChange[R.energy] > 0) {
+            resourceChange[R.energy] = this.constructor.resourceChange[R.energy] * (1 + workerFulfilment) * .5
         }
 
-        console.log(resourceChange)
-        return currentResources //+ resourceChange
+        return nj.add(currentResources, resourceChange)
     }
 }
 
@@ -89,8 +86,6 @@ export class Player {
         this.resources = nj.array([10000, 10000, 1000, 1000, 1000, 10])
         this.buildings = [new Core(), new Core()]
         this.outposts = []
-        console.log(this.resources)
-        
     }
 
     dailyUpdate() {

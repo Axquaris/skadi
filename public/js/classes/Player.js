@@ -1,17 +1,41 @@
 
-export class R {
-    static pop = 0
-    static energy = 1
-    static food = 2
-    static material = 3
-    static supplies = 4
-    static weapons = 5
+export class ResourceVec {
+    constructor(pop, energy, food, materials, supplies, weapons) {
+        this.pop = pop;
+        this.energy = energy;
+        this.food = food;
+        this.materials = materials;
+        this.supplies = supplies;
+        this.weapons = weapons;
+    }
+
+    static multiply(vec, scalar) {
+        return new ResourceVec(
+            vec.pop * scalar,
+            vec.energy * scalar,
+            vec.food * scalar,
+            vec.materials * scalar,
+            vec.supplies * scalar,
+            vec.weapons * scalar
+        );
+    }
+
+    static add(vec, other) {
+        return new ResourceVec(
+            vec.pop + other.pop,
+            vec.energy + other.energy,
+            vec.food + other.food,
+            vec.materials + other.materials,
+            vec.supplies + other.supplies,
+            vec.weapons + other.weapons
+        );
+    }
 }
 
 
 export class Building {
     static workersNeeded = 0
-    static resourceChange = nj.array([0, 0, 0, 0, 0, 0])
+    static resourceChange = new ResourceVec(0, 0, 0, 0, 0, 0)
 
     constructor() {
         this.workers = 2000
@@ -20,13 +44,13 @@ export class Building {
     dailyUpdate(currentResources) {
         var workerFulfilment = Math.max(this.constructor.workersNeeded / this.workers, 1)
         
-        var resourceChange = nj.multiply(this.constructor.resourceChange, workerFulfilment)
+        var resourceChange = ResourceVec.multiply(this.constructor.resourceChange, workerFulfilment)
         
-        if (resourceChange[R.energy] > 0) {
-            resourceChange[R.energy] = this.constructor.resourceChange[R.energy] * (1 + workerFulfilment) * .5
+        if (resourceChange.energy > 0) {
+            resourceChange.energy = this.constructor.resourceChange.energy * (1 + workerFulfilment) * .5
         }
 
-        return nj.add(currentResources, resourceChange)
+        return ResourceVec.add(currentResources, resourceChange)
     }
 }
 
@@ -35,7 +59,7 @@ export class Agroponics extends Building {
     static workersNeeded = 1800
 
     // pop, energy, food, material, supplies, weapons
-    static resourceChange = nj.array([-.03, -35, 30, -10, -10, 0])
+    static resourceChange = new ResourceVec(-.03, -35, 30, -10, -10, 0)
 }
 
 
@@ -43,7 +67,7 @@ export class SupplyManufactories extends Building {
     static workersNeeded = 2200
 
     // pop, energy, food, material, supplies, weapons
-    static resourceChange = nj.array([-.06, -40, 0, -10, 40, 0])
+    static resourceChange = new ResourceVec(-.06, -40, 0, -10, 40, 0)
 }
 
 
@@ -51,7 +75,7 @@ export class WarManufactories extends Building {
     static workersNeeded = 2200
 
     // pop, energy, food, material, supplies, weapons
-    static resourceChange = nj.array([-.06, -40, 0, -10, 0, 10])
+    static resourceChange = new ResourceVec(-.06, -40, 0, -10, 0, 10)
 }
 
 
@@ -59,7 +83,7 @@ export class WellnessCenter extends Building {
     static workersNeeded = 600
 
     // pop, energy, food, material, supplies, weapons
-    static resourceChange = nj.array([1, -40, -8, 0, -5, 0])
+    static resourceChange = new ResourceVec(1, -40, -8, 0, -5, 0)
 }
 
 
@@ -67,7 +91,7 @@ export class Core extends Building {
     static workersNeeded = 1200
 
     // pop, energy, food, material, supplies, weapons
-    static resourceChange = nj.array([-.06, 80, 0, 0, -5, 0])
+    static resourceChange = new ResourceVec(-.06, 80, 0, 0, -5, 0)
 }
 
 
@@ -77,13 +101,13 @@ export class Player {
 
     // Pop consumption
     // pop, energy, food, material, supplies, weapons
-    static resourcePerPop = nj.array([0, -.0035, -.002, 0, -.003, 0])
+    static resourcePerPop = new ResourceVec(0, -.0035, -.002, 0, -.003, 0)
     // energy per pop: Scaled down by 10 from 13 kwh per year per person
 
     constructor(username) {
         this.username = username
         // pop, energy, food, material, supplies, weapons
-        this.resources = nj.array([10000, 10000, 1000, 1000, 1000, 10])
+        this.resources = new ResourceVec(10000, 10000, 1000, 1000, 1000, 10)
         this.buildings = [new Core(), new Core()]
         this.outposts = []
     }

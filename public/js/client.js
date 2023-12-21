@@ -131,13 +131,7 @@ setInterval(() => {
     player.dailyUpdate()
     
     // pop, energy, food, material, supplies, weapons
-    document.querySelector("#population-ui").innerHTML = `Population: ${player.resources.get(0)}`
-    document.querySelector("#energy-ui").innerHTML = `Energy: ${player.resources.get(1)}`
-    document.querySelector("#food-ui").innerHTML = `Food: ${player.resources.get(2)}`
-    document.querySelector("#materials-ui").innerHTML = `Material: ${player.resources.get(3)}`
-    document.querySelector("#supplies-ui").innerHTML = `Supplies: ${player.resources.get(4)}`
-    document.querySelector("#weapons-ui").innerHTML = `Weapons: ${player.resources.get(5)}`
-
+    document.querySelector("ui-header").updateVariables(player.resources);
     
   }
   if ((tick + 1) % (cfg.ticks_per_day * cfg.days_per_week) === 0) {
@@ -145,10 +139,11 @@ setInterval(() => {
     player.weeklyUpdate()
   }
 
-  // if (backEndWorld['pop'] <= 0) {
-  //   initGame()
-  //   console.log('Game ended')
-  // }
+  if (player['pop'] <= 0) {
+    initGame()
+    // console.log('Game ended')
+    alert('Your colony has died!')
+  }
 
   tick++
 }, cfg.ms_per_tick)

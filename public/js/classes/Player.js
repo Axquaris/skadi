@@ -1,48 +1,16 @@
-
-export class ResourceVec {
-    constructor(pop, energy, food, materials, supplies, weapons) {
-        this.pop = pop;
-        this.energy = energy;
-        this.food = food;
-        this.materials = materials;
-        this.supplies = supplies;
-        this.weapons = weapons;
-    }
-
-    static multiply(vec, scalar) {
-        return new ResourceVec(
-            vec.pop * scalar,
-            vec.energy * scalar,
-            vec.food * scalar,
-            vec.materials * scalar,
-            vec.supplies * scalar,
-            vec.weapons * scalar
-        );
-    }
-
-    static add(vec, other) {
-        return new ResourceVec(
-            vec.pop + other.pop,
-            vec.energy + other.energy,
-            vec.food + other.food,
-            vec.materials + other.materials,
-            vec.supplies + other.supplies,
-            vec.weapons + other.weapons
-        );
-    }
-}
-
+import { ResourceVec } from "./ResourceVec.js";
 
 export class Building {
+    static displayName = "Building"
     static workersNeeded = 0
     static resourceChange = new ResourceVec(0, 0, 0, 0, 0, 0)
 
     constructor() {
-        this.workers = 2000
+        this.workers = 0
     }
 
     dailyUpdate(currentResources) {
-        var workerFulfilment = Math.max(this.constructor.workersNeeded / this.workers, 1)
+        var workerFulfilment = Math.max(Math.min(this.constructor.workersNeeded, 1), 0)
         
         var resourceChange = ResourceVec.multiply(this.constructor.resourceChange, workerFulfilment)
         
@@ -56,6 +24,7 @@ export class Building {
 
 
 export class Agroponics extends Building {
+    static displayName = "Agroponics"
     static workersNeeded = 1800
 
     // pop, energy, food, material, supplies, weapons
@@ -64,6 +33,7 @@ export class Agroponics extends Building {
 
 
 export class SupplyManufactories extends Building {
+    static displayName = "Supply Manufactories"
     static workersNeeded = 2200
 
     // pop, energy, food, material, supplies, weapons
@@ -72,6 +42,7 @@ export class SupplyManufactories extends Building {
 
 
 export class WarManufactories extends Building {
+    static displayName = "War Manufactories"
     static workersNeeded = 2200
 
     // pop, energy, food, material, supplies, weapons
@@ -80,6 +51,7 @@ export class WarManufactories extends Building {
 
 
 export class WellnessCenter extends Building {
+    static displayName = "Wellness Center"
     static workersNeeded = 600
 
     // pop, energy, food, material, supplies, weapons
@@ -88,11 +60,15 @@ export class WellnessCenter extends Building {
 
 
 export class Core extends Building {
+    static displayName = "Core"
     static workersNeeded = 1200
 
     // pop, energy, food, material, supplies, weapons
     static resourceChange = new ResourceVec(-.06, 80, 0, 0, -5, 0)
 }
+
+
+export const buildingClasses = [Agroponics, SupplyManufactories, WarManufactories, WellnessCenter];
 
 
 export class Player {
@@ -108,17 +84,32 @@ export class Player {
         this.username = username
         // pop, energy, food, material, supplies, weapons
         this.resources = new ResourceVec(10000, 10000, 1000, 1000, 1000, 10)
-        this.buildings = [new Core(), new Core()]
+        this.maxResources = new ResourceVec(10000, 10000, 5000, 5000, 5000, 1000)
+
+        this.core = new Core()
+        this.buildings = []
         this.outposts = []
     }
 
     dailyUpdate() {
-        // console.log(this.resources)
-        // this.resources = this.resources.add(Player.resourcePerPop).multiply(this.resources.get(0))
-        // console.log(this.resources)
+        // console.log("Starting Daily Resources", this.resources)
+        // Population Updates
+        var prevResources = this.resources.clone()
+
+        this.resources = ResourceVec.add(
+            this.resources,
+            ResourceVec.multiply(Player.resourcePerPop, this.resources.pop)
+        )
+
+        // Building Updates
+        this.resources = this.core.dailyUpdate(this.resources)
         this.buildings.forEach(building => {
             this.resources = building.dailyUpdate(this.resources)
         })
+        
+        // console.log("Ending Daily Resources", this.resources)
+        var dResources = ResourceVec.subtract(this.resources, prevResources)
+        return dResources
     }
 
     weeklyUpdate() {

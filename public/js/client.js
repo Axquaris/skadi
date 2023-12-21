@@ -1,4 +1,8 @@
 import { Player } from "./classes/Player.js"
+import { buildUI } from "./ui-components.js"
+
+buildUI()
+
 
 let cfg = {
   "port" : 3000,
@@ -7,17 +11,14 @@ let cfg = {
   "days_per_week" : 7
 }
 
-const canvas = document.querySelector('canvas')
 const socket = io()
-const scoreEl = document.querySelector('#scoreEl')
+const myId = socket.id
 
 // ===================== //
 // Init Local Game State //
 // ===================== //
-const myId = socket.id
 const frontEndPlayers = {}
 const frontEndWorld = {}
-
 const player = new Player("randstr")
 
 // Recieve game state update (projectiles)
@@ -128,16 +129,18 @@ setInterval(() => {
   
   if ((tick + 1) % cfg.ticks_per_day === 0) {
     // Day tick
-    player.dailyUpdate()
-    
-    // pop, energy, food, material, supplies, weapons
-    document.querySelector("ui-header").updateVariables(player.resources);
-    
+    var dResources = player.dailyUpdate()
+
+    document.querySelector("ui-header").updateVariables(
+      player.resources,
+      player.maxResources,
+      dResources
+    );
   }
-  if ((tick + 1) % (cfg.ticks_per_day * cfg.days_per_week) === 0) {
-    // Week tick
-    player.weeklyUpdate()
-  }
+  // if ((tick + 1) % (cfg.ticks_per_day * cfg.days_per_week) === 0) {
+  //   // Week tick
+  //   player.weeklyUpdate()
+  // }
 
   if (player['pop'] <= 0) {
     initGame()
@@ -147,3 +150,5 @@ setInterval(() => {
 
   tick++
 }, cfg.ms_per_tick)
+
+export { player }

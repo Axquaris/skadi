@@ -18,63 +18,14 @@
             /* Light text color */
         }
 
-        #header {
-            background-color: #075c95;
-            color: #fff;
-            text-align: center;
-            padding: 10px;
-        }
-
-        #resources {
-            display: flex;
-            justify-content: space-around;
-            background-color: #34495e;
-            /* Darker background color */
-            padding: 5px;
-        }
-
-        .resource {
-            flex: 1;
-            text-align: center;
-            padding: 5px;
-            border: 1px solid #2c3e50;
+        .sink {
+            text-align: left;
+            background-color: #1c232c;
             /* Background color of body */
             border-radius: 5px;
-            margin: 2px;
-        }
-
-        #columns {
-            display: flex;
-            border-top: 1px solid #2c3e50;
-            /* Background color of body */
-            border-bottom: 1px solid #2c3e50;
-            /* Background color of body */
-        }
-
-        .column {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            border-right: 1px solid #2c3e50;
-            /* Background color of body */
-        }
-
-        .last-column {
-            border-right: none;
-        }
-
-        #players {
-            flex-basis: 50%;
-            display: flex;
-            flex-direction: column;
-            border-top: 1px solid #2c3e50;
-            /* Background color of body */
-        }
-
-        #trade {
-            flex-basis: 50%;
-            border-top: 1px solid #2c3e50;
-            /* Background color of body */
+            padding: 5px;
+            margin-top: 5px;
+            height: 80px;
         }
     </style>
 </head>
@@ -84,34 +35,54 @@
         integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
         crossorigin="anonymous"></script>
 
-    <div id="header">
-        <h1>City Name & Origin</h1>
-    </div>
+    
 
-    <div id="resources">
-        <div class="resource" style="background-color: #cfb90f; color: #fff;">Population</div>
-        <div class="resource" style="background-color: #1fc162; color: #fff;">Food</div>
-        <div class="resource" style="background-color: #f39c12; color: #fff;">Energy</div>
-        <div class="resource" style="background-color: #e74c3c; color: #fff;">Materials</div>
-        <div class="resource" style="background-color: #413b7e; color: #fff;">Supplies</div>
-        <div class="resource" style="background-color: #721114; color: #fff;">Weapons</div>
-    </div>
+    <div style="padding-top: 5px; margin-top: 10px;">
+        <h3 style="text-align: center;">
+            Buildings
+        </h3>
 
-    <div id="columns">
-        <div class="column col-4">
-            <h2>Domain</h2>
-            <!-- Add content for Domain column -->
-        </div>
-        <div class="column">
-            <div id="players">
-                <h2>Players</h2>
-                <!-- Add content for Players column -->
+        <div class="row">
+            <div class="col-6">
+                <div class="sink">
+                    <h5>City Core</h5>
+                    <div class="row">
+                        <div class="col-4">Powerplant</div>
+                        <div class="col-4">Residential</div>
+                        <div class="col-4">Administrative</div>
+                    </div>
+                </div>
+                <div>
+                    <h5>Agriponics</h5>
+                    <div class="row">
+                        <div class="col-4">+X food per day</div>
+                        <div class="col-4"></div>
+                        <div class="col-4"></div>
+                    </div>
+                </div>
             </div>
-            <div id="trade">
-                <h2>Trade</h2>
-                <!-- Add content for Trade column -->
+
+            <div class="col-6">
+                <div class="sink">
+                    <h5>Supply Plant</h5>
+                    <div class="row">
+                        <div class="col-4">-X ore +Y supply per day</div>
+                        <div class="col-4"></div>
+                        <div class="col-4"></div>
+                    </div>
+                </div>
+                <div class="sink">
+                    <h5>Supply Plant</h5>
+                    <div class="row">
+                        <div class="col-4">-X ore +Y supply per day</div>
+                        <div class="col-4"></div>
+                        <div class="col-4"></div>
+                    </div>
+                </div>
             </div>
         </div>
+        
+      
     </div>
 
 </body>

@@ -80,30 +80,38 @@
         </div>
 
         <!-- Main body -->
-        <div class="row" style="padding: 10px;">
+        <div class="row" style="padding-left: 10px; padding-top: 10px;">
             <!-- Main body, Left column -->
             <div class="col-10">
-                <!-- City overview -->
+                <!-- Colony overview -->
                 <h3 id="origin-ui" style="text-align: left;">
-                    City name
+                    Colony name
                 </h3>
-                <div style="padding-top: 5px; margin-top: 10px;">
-                    <h3 id="origin-ui" style="text-align: left;">
-                        Buildings
-                    </h3>
-                    <div class="row">
-                        <div class="col-6">
-                            <building-slot></building-slot>
-                            <building-slot></building-slot>
+                <div class="row" >
+                    <!-- Core -->
+                    <div class="col-4">
+                        <div class="sink" style="height: 100%;">
+                            <h3>Core</h3>
                         </div>
-            
-                        <div class="col-6">
-                            <building-slot></building-slot>
-                            <building-slot></building-slot>
+                    </div>
+                    <!-- Buildings -->
+                    <div class="col-8" style="margin-top: 10px;">
+                        <h3 id="origin-ui" style="text-align: left;">
+                            Buildings
+                        </h3>
+                        <div class="row">
+                            <div class="col-6">
+                                <building-slot></building-slot>
+                                <building-slot></building-slot>
+                            </div>
+                
+                            <div class="col-6">
+                                <building-slot></building-slot>
+                                <building-slot></building-slot>
+                            </div>
                         </div>
                     </div>
                 </div>
-
                 <!-- Outpost overview -->
                 <div style="padding-top: 10px; margin-top: 10px;">
                     <h3 id="origin-ui" style="text-align: left;">Outposts</h3>
@@ -130,23 +138,16 @@
                 </div>
             </div>
             <!-- Main body, right column -->
-            <div class="col-2 bordered">
+            <div class="col-2">
                 <!-- Player overview -->
-                <div style="
-                    display: flex;
-                    flex-direction: column;
-                    margin-top: 10px;
-                ">
+                <div style="height: 30%">
                     <h3>Players</h3>
-                    <div id="players-ui" class="sink" style="height: 256px"></div>
+                    <div id="players-ui" class="sink" style="padding: 10px; height: 100%;"></div>
                 </div>
                 <!-- Trade overview -->
-                <div style="
-                    border-top: 1px;
-                    margin-top: 10px;
-                ">
+                <div style="height: 50%; margin-top: 60px;">
                     <h3>Trade</h3>
-                    <div id="trade-ui" class="sink" style="height: 256px"></div>
+                    <div id="trade-ui" class="sink" style="padding: 10px; height: 100%;"></div>
                 </div>
             </div>
         </div>

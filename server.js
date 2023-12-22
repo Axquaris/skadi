@@ -1,17 +1,23 @@
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
+
 // const express = require('express')
 // const Player = require('./public/js/classes/Player.js')
 // const http = require('http')
 // const { Server } = require('socket.io')
 
+
+// ===================== //
+// Game Config Variables //
+// ===================== //
 let cfg = {
-  "port" : 3000,
-  "ms_per_tick" : 15,
-  "ticks_per_day" : 50,
-  "days_per_week" : 7
+    "port": 3000,
+    "ms_per_tick": 15,
+    "ticks_per_day": 50,
+    "days_per_week": 7
 }
+console.log(`Time for one year: ${cfg.ms_per_tick * cfg.ticks_per_day * cfg.days_per_week * 55 / 1000 / 60}`)
 
 
 const app = express()
@@ -23,19 +29,18 @@ const port = 3000
 
 app.use(express.static('public'))
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html')
+    res.sendFile(__dirname + '/index.html')
 })
 
 
 // =============== //
 // Game state vars //
 // =============== //
-let backEndPlayers = {}
-let backEndWorld = {}
+let backEndWorld;
 
 function initGame() {
   backEndPlayers = {}
-  backEndWorld = {'pop':10000}
+  backEndWorld = new World()
 }
 
 initGame()
@@ -47,64 +52,50 @@ initGame()
 
 // Handle new connection, given socket to that player
 io.on('connection', (socket) => {
-  // console.log('a user connected')
+    // console.log('a user connected')
 
-  io.emit('updatePlayers', backEndPlayers) // Tell all players about joiner
+    // io.emit('updatePlayers', backEndWorld.players) // Tell all players about joiner
 
-  socket.on('initGame', ({username}) => {
-    backEndPlayers[socket.id] = {
-      color: `hsl(${360 * Math.random()}, 100%, 50%)`,
-      username
-    }
-    // console.log(username)
-  })
+    socket.on('initGame', (player) => {
+        backEndWorld.addPlayer(player)
+        console.log(player.username, "connected")
+    })
 
-  // Player action event listener: press
-  socket.on('press', ({amt}) => {
-    backEndWorld['pop'] -= amt
-
-    // console.log(backEndWorld)
-  })
-
-  // Player action event listener: discnnecting
-  socket.on('disconnect', (reason) => {
-    // console.log(reason)
-    delete backEndPlayers[socket.id]
-    io.emit('updatePlayers', backEndPlayers)
-  })
+    // Player action event listener: discnnecting
+    socket.on('disconnect', (reason) => {
+        // console.log(reason)
+        delete backEndPlayers[socket.id]
+        io.emit('updatePlayers', backEndPlayers)
+    })
 })
 
-// ================ //
-// GAME CONFIG VARS //
-// ================ //
-console.log(`Time for one year: ${cfg.ms_per_tick*cfg.ticks_per_day*cfg.days_per_week*55/1000/60}`)
+
+
 
 // ============== //
 // CORE GAME LOOP //
 // ============== //
 let tick = 0
 setInterval(() => {
-  
-  if ((tick + 1) % cfg.ticks_per_day === 0) {
-    backEndWorld['pop'] -= 1
-  }
-  if ((tick + 1) % (cfg.ticks_per_day * cfg.days_per_week) === 0) {
-    // Weekly updateconsole.log(`t${tick} d${day}`)
-    console.log(`Weekly update at t${tick}`)
-  }
 
+    if ((tick + 1) % cfg.ticks_per_day === 0) {
+        backEndWorld.dailyUpdate()
+    }
+    if ((tick + 1) % (cfg.ticks_per_day * cfg.days_per_week) === 0) {
+        // Weekly updateconsole.log(`t${tick} d${day}`)
+        console.log(`Weekly update at t${tick}`)
+        backEndWorld.weeklyUpdate()
 
-  if (backEndWorld['pop'] <= 0) {
-    initGame()
-    console.log('Game ended')
-  }
+        io.emit('updateWorld', backEndWorld)
+    }
 
-  io.emit('updateWorld', backEndWorld)
-  io.emit('updatePlayers', backEndPlayers)
+    io.emit('updatePlayers', backEndPlayers)
 
-  tick++
+    tick++
 }, cfg.ms_per_tick)
 
+
+// Start server listening to port
 server.listen(port, () => {
 })
 

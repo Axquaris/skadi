@@ -1,5 +1,5 @@
 
-export class ResourceVec {
+export class ResourceVec{
     constructor(pop = 0, energy = 0, food = 0, materials = 0, supplies = 0, weapons = 0) {
         this.pop = pop;
         this.energy = energy;
@@ -62,5 +62,38 @@ export class ResourceVec {
             Math.round(this.supplies),
             Math.round(this.weapons)
         );
+    }
+
+    /**
+     * Executes a provided callback function once for each element in the array.
+     *
+     * @param {Function} callback - A function to execute on each element.
+     *                             It accepts three arguments: the current element, the index of the current element, and the array itself.
+     * @returns {undefined}
+     */
+    forEach(callback) {
+        for (let i = 0; i < this.length; i++) {
+            callback(this[i], i, this);
+        }
+    }
+
+    /**
+     * Calculates the resource fulfillment based on the given consumption.
+     * 
+     * @param {ResourceVec} consumption - The consumption of resources.
+     * @returns {number} The resource fulfillment value.
+     */
+    fulfilment(consumption) {
+        var resourceFulfillment = 1;
+
+        var newResources = ResourceVec.add(this, consumption);
+        newResources.forEach((val, idx) => {
+            if (val < 0) {
+                resourceChange.set(idx, 0);
+                resourceFulfillment = Math.min(resourceFulfillment, -this.get(idx) / resourceChange.get(idx));
+            }
+        });
+
+        return resourceFulfillment;
     }
 }

@@ -1,4 +1,5 @@
-import { LitElement, html, css } from 'https://unpkg.com/lit@2.0.2?module';
+import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js';
+
 import { buildingClasses } from "./classes/Building.js";
 import { Building } from "./classes/Building.js";
 import { ResourceVec } from "./classes/ResourceVec.js";
@@ -335,7 +336,6 @@ class PlayersUI extends LitElement {
     }
 
     render() {
-
         // TODO: sort players
         console.log(PlayersUI.world.players)
         const players = Object.values(PlayersUI.world.players);

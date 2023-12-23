@@ -1,6 +1,0 @@
-{
-    "port" : 3000,
-    "ms_per_tick" : 15,
-    "ticks_per_day" : 50,
-    "days_per_week" : 7
-}

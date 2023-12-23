@@ -2,6 +2,8 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 
+import { World } from './public/classes/World.js';
+
 // const express = require('express')
 // const Player = require('./public/js/classes/Player.js')
 // const http = require('http')
@@ -39,7 +41,7 @@ app.get('/', (req, res) => {
 let backEndWorld;
 
 function initGame() {
-  backEndPlayers = {}
+//   backEndPlayers = {}
   backEndWorld = new World()
 }
 
@@ -64,12 +66,10 @@ io.on('connection', (socket) => {
     // Player action event listener: discnnecting
     socket.on('disconnect', (reason) => {
         // console.log(reason)
-        delete backEndPlayers[socket.id]
-        io.emit('updatePlayers', backEndPlayers)
+        // delete backEndPlayers[socket.id]
+        // io.emit('updatePlayers', backEndPlayers)
     })
 })
-
-
 
 
 // ============== //
@@ -89,7 +89,7 @@ setInterval(() => {
         io.emit('updateWorld', backEndWorld)
     }
 
-    io.emit('updatePlayers', backEndPlayers)
+    // io.emit('updatePlayers', backEndPlayers)
 
     tick++
 }, cfg.ms_per_tick)

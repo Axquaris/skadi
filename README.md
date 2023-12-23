@@ -1,14 +1,23 @@
-# skadi
+# Skadi
+Manage a lost company that crash-landed on a frozen-over death-world. In order to survive, you must set trade policy, manage your economy, and engage other players with military force.
+
+### The Setting
+![Skadi Settting](images/skadi-aigen.png)
+
+### UI
+![Skadi UI (as of 12/23/2023)](images/skadi-2023-12-23.png)
 
 
+# Dev Notes
 ## Server setup
+```bash
+npm run build; node dist/server.js
+```
 
-https://localxpose.io/
+## Client connection
+connect to port `:3000` of host
 
-## Client setup
-
-
-## Notes
+## Stash
 ### Libraries
 Networking: https://socket.io/docs/v4/tutorial/step-1
 Server: https://expressjs.com/

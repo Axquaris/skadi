@@ -4,10 +4,10 @@ import { buildUI } from "./ui-components.js"
 
 
 let cfg = {
-  "port" : 3000,
-  "ms_per_tick" : 15,
-  "ticks_per_day" : 50,
-  "days_per_week" : 7
+    "port": 3000,
+    "ms_per_tick": 15,
+    "ticks_per_day": 50,
+    "days_per_week": 7
 }
 
 const socket = io()
@@ -24,16 +24,25 @@ const world = new World()
 
 buildUI(world, player)
 
+// Lobby UI element aliases
+
+// Game UI element aliases
+var headerUI = document.querySelector("header-ui")
+var playersUI = document.querySelector("players-ui")
+var worldUI = document.querySelector("world-ui")
+
+
 // Recieve game state update (projectiles)
 socket.on('updateWorld', (backEndWorld) => {
-  world.sync(backEndWorld)
+    console.log("Recieved world update", backEndWorld)
+    world.sync(backEndWorld)
 })
 
 
 // Recieve game state update (projectiles)
 socket.on('updatePlayers', (backEndPlayers) => {
-  world.updatePlayers(backEndPlayers)
-  document.querySelector("players-ui").requestUpdate()
+    world.updatePlayers(backEndPlayers)
+    playersUI.requestUpdate()
 })
 
 
@@ -58,34 +67,35 @@ document.querySelector('#usernameForm').addEventListener('submit', (event) => {
 // ============== //
 let tick = 0
 setInterval(() => {
-  if ((tick + 1) % cfg.ticks_per_day == 0) {
-    // Day tick
-    var dResources = player.dailyUpdate()
-    world.dailyUpdate()
+    if ((tick + 1) % cfg.ticks_per_day == 0) {
+        // Day tick
+        var dResources = player.dailyUpdate()
+        world.dailyUpdate()
 
-    document.querySelector("header-ui").updateVariables(
-      player.resources,
-      player.maxResources,
-      dResources
-    );
+        headerUI.updateVariables(
+            player.resources,
+            player.maxResources,
+            dResources
+        )
+        
+        playersUI.requestUpdate()
+        worldUI.requestUpdate()
+    }
+    if ((tick + 1) % (cfg.ticks_per_day * cfg.days_per_week) == 0) {
+        // Week tick
+        player.weeklyUpdate()
+        world.weeklyUpdate()
+    }
 
-    document.querySelector("world-ui").requestUpdate()
-  }
-  if ((tick + 1) % (cfg.ticks_per_day * cfg.days_per_week) == 0) {
-    // Week tick
-    player.weeklyUpdate()
-    world.weeklyUpdate()
-  }
+    // Game over conditions
+    if (player['pop'] <= 0) {
+        alert('No colonists survived')
+    }
+    else if (player['energy'] <= 0) {
+        alert('Your colony ran out of energy, and all colonists froze to death.')
+    }
 
-  // Game over conditions
-  if (player['pop'] <= 0) {
-    alert('No colonists survived')
-  }
-  else if (player['energy'] <= 0) {
-    alert('Your colony ran out of energy, and all colonists froze to death.')
-  }
-
-  tick++
+    tick++
 }, cfg.ms_per_tick)
 
 export { player }

@@ -3,6 +3,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 
 import { World } from './public/classes/World.js';
+import { workerData } from 'worker_threads';
 
 // const express = require('express')
 // const Player = require('./public/js/classes/Player.js')
@@ -40,9 +41,13 @@ app.get('/', (req, res) => {
 // =============== //
 let backEndWorld;
 
+let tick = 0
+let noPlayers = true
+
 function initGame() {
 //   backEndPlayers = {}
-  backEndWorld = new World()
+    tick = 0
+    backEndWorld = new World()
 }
 
 initGame()
@@ -61,12 +66,15 @@ io.on('connection', (socket) => {
     socket.on('initGame', (player) => {
         backEndWorld.addPlayer(player)
         console.log(player.username, "connected")
+
+        noPlayers = false
     })
 
-    // Player action event listener: discnnecting
+    // Player action event listener: disconnecting
     socket.on('disconnect', (reason) => {
         // console.log(reason)
         // delete backEndPlayers[socket.id]
+        backEndWorld.removePlayer(socket.id)
         // io.emit('updatePlayers', backEndPlayers)
     })
 })
@@ -75,9 +83,20 @@ io.on('connection', (socket) => {
 // ============== //
 // CORE GAME LOOP //
 // ============== //
-let tick = 0
-setInterval(() => {
 
+
+setInterval(() => {
+    if (!noPlayers) {
+        if (backEndWorld.players.length < 1) {
+            noPlayers = true
+            tick = 0
+        }
+        gameTick()
+    }
+}, cfg.ms_per_tick)
+
+
+function gameTick() {
     if ((tick + 1) % cfg.ticks_per_day === 0) {
         backEndWorld.dailyUpdate()
     }
@@ -88,11 +107,9 @@ setInterval(() => {
 
         io.emit('updateWorld', backEndWorld)
     }
-
     // io.emit('updatePlayers', backEndPlayers)
-
     tick++
-}, cfg.ms_per_tick)
+}
 
 
 // Start server listening to port

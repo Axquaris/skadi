@@ -337,7 +337,6 @@ class PlayersUI extends LitElement {
 
     render() {
         // TODO: sort players
-        console.log(PlayersUI.world.players)
         const players = Object.values(PlayersUI.world.players);
 
         players.sort((a, b) => {
@@ -349,7 +348,7 @@ class PlayersUI extends LitElement {
                 <h3>Players</h3>
                 <div class="container" style="padding: 10px; height: 100%;">
                     ${players.map(player => html`
-                        <div>${player.username}: ${player.population} pop</div>
+                        <div>${player.username}: ${Math.round(player.resources.pop)} pop</div>
                     `)}
                 </div>
             </div>

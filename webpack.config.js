@@ -1,5 +1,6 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 
 const clientConfig = {
@@ -17,21 +18,6 @@ const clientConfig = {
     experiments: {
         outputModule: true,
     },
-    // module: {
-    //     rules: [
-    //       {
-    //         test: /\.js$/,
-    //         exclude: /node_modules/,
-    //         use: {
-    //           loader: 'esbuild-loader',
-    //           options: {
-    //             loader: 'js',  // Or 'ts' if you're using TypeScript
-    //             target: 'es2015'
-    //           },
-    //         },
-    //       },
-    //     ],
-    //   },
 };
 
 

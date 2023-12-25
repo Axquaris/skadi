@@ -65,6 +65,12 @@ const shared_styles = css`
         border-radius: 10px;
         margin: 2px;
     }
+
+    .btn {
+        padding: 5px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
 `
 
 
@@ -146,7 +152,7 @@ class BuildingSlot extends LitElement {
             return html`
                 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
                 <div class="dashed-container text-center">
-                    <button id="myButton" @click=${this.handleBuild}>Build</button>
+                    <button type="button" class="btn btn-primary" @click=${this.handleBuild}>Build</button>
                 </div>
             `;
         }
@@ -156,24 +162,24 @@ class BuildingSlot extends LitElement {
                 <div class="row">
                     <div class="col-6">
                         <div class="build-building">
-                            <button @click=${() => this.handleBuildX(0)}>
+                            <button type="button" class="btn btn-primary" @click=${() => this.handleBuildX(0)}>
                                 Build ${buildingClasses[0].displayName}
                             </button>
                         </div>
                         <div class="build-building">
-                            <button @click=${() => this.handleBuildX(1)}>
+                            <button type="button" class="btn btn-primary" @click=${() => this.handleBuildX(1)}>
                                 Build ${buildingClasses[1].displayName}
                             </button>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="build-building">
-                            <button @click=${() => this.handleBuildX(2)}>
+                            <button type="button" class="btn btn-primary" @click=${() => this.handleBuildX(2)}>
                                 Build ${buildingClasses[2].displayName}
                             </button>
                         </div>
                         <div class="build-building">
-                            <button @click=${() => this.handleBuildX(3)}>
+                            <button type="button" class="btn btn-primary" @click=${() => this.handleBuildX(3)}>
                                 Build ${buildingClasses[3].displayName}
                             </button>
                         </div>
@@ -197,7 +203,7 @@ class BuildingSlot extends LitElement {
                                 Efficiency: ${Math.round(this._building.efficiency * 100)}%
                             </div>
                             <div class="d-flex align-items-end justify-content-end">
-                                <button id="myButton" @click=${this.handleUpgrade}>Upgrade</button>
+                                <button type="button" class="btn btn-primary" @click=${this.handleUpgrade}>Upgrade</button>
                             </div>
                         </div>
                     </div>
@@ -256,27 +262,27 @@ class OutpostSlot extends LitElement {
     render() {
         if (this._state == "empty") {
             return html`
-                <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+                <link rel="stylesheet" href="bootstrap.css">
                 <div class="dashed-container text-center">
-                    <button id="myButton" @click=${this.handleBuild}>Build</button>
+                    <button type="button" class="btn btn-primary" @click=${this.handleBuild}>Build</button>
                 </div>
             `;
         }
         else {
             return html`
-            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-            <div class="container">
-                <div class="row">
-                    <div class="col-6">
-                        <h5>Supply Plant</h5>
-                        ${dynamicVariable}
-                    </div>
-                    <div class="col-6">
-                        <button id="myButton" @click=${this.handleUpgrade}>Upgrade</button>
+                <link rel="stylesheet" href="bootstrap.css">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-6">
+                            <h5>Supply Plant</h5>
+                            ${dynamicVariable}
+                        </div>
+                        <div class="col-6">
+                            <button type="button" class="btn btn-primary" @click=${this.handleUpgrade}>Upgrade</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
         }
     }
 

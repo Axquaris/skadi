@@ -40,5 +40,5 @@ const serverConfig = {
 
 module.exports = [
     clientConfig,
-    serverConfig
+    serverConfig,
 ];

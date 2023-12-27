@@ -112,6 +112,7 @@ export class Core extends Building {
     static resourceChange = new ResourceVec(-0.06, 80, 0, 0, -5, 0);
 }
 
+
 export var buildingClasses = [Agroponics, WellnessCenter, SupplyManufactories, WarManufactories];
 
 var classes = {

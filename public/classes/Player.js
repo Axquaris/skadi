@@ -23,8 +23,8 @@ export class Player {
         this.buildings = []
         this.outposts = []
     }
-
-    toJSON() {
+    
+toJSON() {
         return {
             id: this.id,
             username: this.username,

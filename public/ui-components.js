@@ -1,9 +1,9 @@
 import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js';
 
 import { buildingClasses, Building } from "./classes/Building.js";
-import { ResourceVec } from "./classes/ResourceVec.js";
 import { World } from "./classes/World.js";
 import { Player } from './classes/Player.js';
+import { ResourceVec } from "./classes/ResourceVec.js";
 
 
 const shared_styles = css`
@@ -93,7 +93,7 @@ class HeaderUI extends LitElement {
         var d = this._dResources;
         console.log("HeaderUI render", c, m, d);
 
-        return html`
+        const h = html`
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
             <div class="resources">
                 <div id="population-ui" class="resource" style="background-color: rgb(186, 108, 84);">
@@ -122,13 +122,16 @@ class HeaderUI extends LitElement {
                 </div>
             </div>
         `;
+        console.log(h)
+        return h
     }
 
-    update(player) {
+    updateVariables(player) {
         console.log("HeaderUI update", player);
-        this._currentResources = player.resources;
-        this._maxResources = player.maxResources;
-        this._dResources = player.dResources;
+        this._currentResources = player.resources.clone();
+        this._maxResources = player.maxResources.clone();
+        this._dResources = player.dResources.clone();
+        console.log("HeaderUI update", this._currentResources, this._maxResources, this._dResources);
         this.requestUpdate();
     }
 }
@@ -361,10 +364,17 @@ class PlayersUI extends LitElement {
     }
 }
 
+export function buildUI() {
+    customElements.define('header-ui', HeaderUI);
+    customElements.define('building-slot', BuildingSlot);
+    customElements.define('outpost-slot', OutpostSlot);
 
-customElements.define('header-ui', HeaderUI);
-customElements.define('building-slot', BuildingSlot);
-customElements.define('outpost-slot', OutpostSlot);
+    customElements.define('world-ui', WorldUI);
+    customElements.define('players-ui', PlayersUI);
+}
+// customElements.define('header-ui', HeaderUI);
+// customElements.define('building-slot', BuildingSlot);
+// customElements.define('outpost-slot', OutpostSlot);
 
-customElements.define('world-ui', WorldUI);
-customElements.define('players-ui', PlayersUI);
+// customElements.define('world-ui', WorldUI);
+// customElements.define('players-ui', PlayersUI);

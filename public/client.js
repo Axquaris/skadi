@@ -1,6 +1,6 @@
 import { Player } from "./classes/Player.js"
 import { World } from "./classes/World.js"
-import {} from "./ui-components.js"
+import { buildUI } from "./ui-components.js"
 
 let cfg = {
     "ms_per_tick": 15,
@@ -40,7 +40,7 @@ usernameForm.addEventListener('submit', (event) => {
     var username = document.querySelector('#usernameInput').value
     socket.emit('initGame', username)
 })
-
+buildUI()
 
 // ================ //
 // Socket callbacks //
@@ -94,8 +94,7 @@ function gameTick() {
         player.dailyUpdate()
         clientWorld.dailyUpdate()
         
-        console.log("PLAYER", player)
-        headerUI.update(player)
+        headerUI.updateVariables(player)
         playersUI.requestUpdate()
         worldUI.requestUpdate()
     }

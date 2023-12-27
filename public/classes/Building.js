@@ -12,18 +12,17 @@ export class Building {
     }
 
     static fromJSON(json) {
-        console.log("Building.fromJSON", classes[json.type], json.type);
         var building = new classes[json.type]();
         building.workers = json.workers;
         building.efficiency = json.efficiency;
         return building;
     }
 
-    static toJSON(obj) {
+    toJSON() {
         return {
             type: this.constructor.name,
-            workers: obj.workers,
-            efficiency: obj.efficiency
+            workers: this.workers,
+            efficiency: this.efficiency
         }
     }
 

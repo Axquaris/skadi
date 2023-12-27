@@ -69,7 +69,7 @@ io.on('connection', (socket) => {
         console.log(username, "connected", socket.id)
 
         gameRunning = true
-        socket.emit('gameStart', backEndWorld)  // Tell player about game start
+        socket.emit('gameStart', backEndWorld.toJSON())  // Tell player about game start
     })
 
     // Player action event listener: disconnecting

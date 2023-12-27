@@ -24,15 +24,15 @@ export class Player {
         this.outposts = []
     }
     
-toJSON() {
+    toJSON() {
         return {
             id: this.id,
             username: this.username,
             resources: this.resources,
             dResources: this.dResources,
             maxResources: this.maxResources,
-            core: this.core,
-            buildings: json.buildings.map(building => Building.toJSON(building)),
+            core: this.core.toJSON(),
+            buildings: this.buildings.map(building => building.toJSON()),
             // outposts: this.outposts
         }
     }

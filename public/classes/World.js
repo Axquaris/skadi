@@ -1,22 +1,41 @@
+import { Player } from './Player.js'
+
 
 export class World {
-    constructor() {
-        this.day = 1
-        this.week = 1
+    static instance;
+    // static clientId; // ID of the player running this client
 
-        this.players = {}
+    constructor(clientId = null) {
+        // World state variables
+        this.day = 1;
+        this.week = 1;
+        this.players = {};
+
+        this.clientId = clientId;
     }
 
-    addPlayer(player) {
-        this.players[player.id] = player
+    toJSON() {
+        const serializedPlayers = Object.entries(this.players).reduce((acc, [key, player]) => {
+            acc[key] = player.toJSON();
+            return acc;
+        }, {});
+
+        return {
+            day: this.day,
+            week: this.week,
+            players: serializedPlayers
+        };
     }
 
-    removePlayer(id) {
-        delete this.players[id]
-    }
+    // Full world sync
+    sync(backEndWorld) {
+        this.day = backEndWorld.day
+        this.week = backEndWorld.week
 
-    updatePlayer(id, player) {
-        this.players[id] = player
+        for (let id in backEndWorld.players) {
+            this.players[id] = Player.fromJSON(backEndWorld.players[id])
+            console.log()
+        }
     }
 
     // World tick functions
@@ -27,13 +46,5 @@ export class World {
     weeklyUpdate() {
         this.day = 1
         this.week++
-    }
-
-    // Full world sync
-    sync(backEndWorld) {
-        this.day = backEndWorld.day
-        this.week = backEndWorld.week
-
-        this.players = backEndWorld.players
-    }
+    }    
 }

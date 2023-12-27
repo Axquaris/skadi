@@ -3,6 +3,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 
 import { World } from './public/classes/World.js';
+import { Player } from './public/classes/Player.js';
 import { workerData } from 'worker_threads';
 
 // const express = require('express')
@@ -42,7 +43,7 @@ app.get('/', (req, res) => {
 let backEndWorld;
 
 let tick = 0
-let noPlayers = true
+let gameRunning = false
 
 function initGame() {
 //   backEndPlayers = {}
@@ -63,19 +64,18 @@ io.on('connection', (socket) => {
 
     // io.emit('updatePlayers', backEndWorld.players) // Tell all players about joiner
 
-    socket.on('initGame', (player) => {
-        backEndWorld.addPlayer(player)
-        console.log(player.username, "connected")
+    socket.on('initGame', (username) => {
+        backEndWorld.players[socket.id] = new Player(socket.id, username)
+        console.log(username, "connected", socket.id)
 
-        noPlayers = false
+        gameRunning = true
+        socket.emit('gameStart', backEndWorld)  // Tell player about game start
     })
 
     // Player action event listener: disconnecting
     socket.on('disconnect', (reason) => {
-        // console.log(reason)
-        // delete backEndPlayers[socket.id]
-        backEndWorld.removePlayer(socket.id)
-        // io.emit('updatePlayers', backEndPlayers)
+        console.log(reason)
+        delete backEndWorld.players[socket.id]
     })
 })
 
@@ -84,11 +84,11 @@ io.on('connection', (socket) => {
 // CORE GAME LOOP //
 // ============== //
 
-
 setInterval(() => {
-    if (!noPlayers) {
+    if (gameRunning) {
         if (backEndWorld.players.length < 1) {
-            noPlayers = true
+            initGame()
+            gameRunning = false
             tick = 0
         }
         gameTick()

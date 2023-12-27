@@ -1,10 +1,9 @@
 import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js';
 
-import { buildingClasses } from "./classes/Building.js";
-import { Building } from "./classes/Building.js";
+import { buildingClasses, Building } from "./classes/Building.js";
 import { ResourceVec } from "./classes/ResourceVec.js";
-
-var dynamicVariable = 0;
+import { World } from "./classes/World.js";
+import { Player } from './classes/Player.js';
 
 
 const shared_styles = css`
@@ -69,7 +68,7 @@ const shared_styles = css`
     .btn {
         padding: 5px;
         padding-left: 10px;
-        padding-right: 10px;
+        padding-right: 10px; /* Add horizontal padding */
     }
 `
 
@@ -80,11 +79,11 @@ class HeaderUI extends LitElement {
 
     constructor() {
         super();
-        this._currentResources = new ResourceVec(0, 0, 0, 0, 0, 0);
-        this._maxResources = new ResourceVec(0, 0, 0, 0, 0, 0);
-        this._dResources = new ResourceVec(0, 0, 0, 0, 0, 0);
-        this.attachShadow({ mode: 'open' });
+        this._currentResources = new ResourceVec();
+        this._maxResources = new ResourceVec();
+        this._dResources = new ResourceVec();
 
+        this.attachShadow({ mode: 'open' });
         this.render();
     }
 
@@ -92,6 +91,7 @@ class HeaderUI extends LitElement {
         var c = this._currentResources.roundToInt();
         var m = this._maxResources;
         var d = this._dResources;
+        console.log("HeaderUI render", c, m, d);
 
         return html`
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -124,10 +124,11 @@ class HeaderUI extends LitElement {
         `;
     }
 
-    updateVariables(resources = null, maxResources = null, dResources = null) {
-        if (resources !== null)  this._currentResources = resources;
-        if (maxResources !== null)  this._maxResources = maxResources;
-        if (dResources !== null)  this._dResources = dResources;
+    update(player) {
+        console.log("HeaderUI update", player);
+        this._currentResources = player.resources;
+        this._maxResources = player.maxResources;
+        this._dResources = player.dResources;
         this.requestUpdate();
     }
 }
@@ -136,14 +137,14 @@ class HeaderUI extends LitElement {
 class BuildingSlot extends LitElement {
     static styles = shared_styles;
     static currentIdx = 0;
-    static owner; // Player object
 
     constructor() {
         super();
+        this._player = new Player();
         this._building = new Building();
         this._state = "empty"
-        this.attachShadow({ mode: 'open' });
 
+        this.attachShadow({ mode: 'open' });
         this.render();
     }
 
@@ -236,13 +237,12 @@ class BuildingSlot extends LitElement {
         
         this._building = new buildingClasses[button_idx]();
         this._building.listeners.push(this);
-        BuildingSlot.owner.buildings.push(this._building); // Append to the list
+        this._player.buildings.push(this._building); // Append to the list
         this.requestUpdate();
     }
 
     // Upgrade Logic
     handleUpgrade() {
-        dynamicVariable += 1;
         this.requestUpdate();
     }
 }
@@ -262,7 +262,7 @@ class OutpostSlot extends LitElement {
     render() {
         if (this._state == "empty") {
             return html`
-                <link rel="stylesheet" href="bootstrap.css">
+                <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
                 <div class="dashed-container text-center">
                     <button type="button" class="btn btn-primary" @click=${this.handleBuild}>Build</button>
                 </div>
@@ -270,12 +270,11 @@ class OutpostSlot extends LitElement {
         }
         else {
             return html`
-                <link rel="stylesheet" href="bootstrap.css">
+                <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
                 <div class="container">
                     <div class="row">
                         <div class="col-6">
                             <h5>Supply Plant</h5>
-                            ${dynamicVariable}
                         </div>
                         <div class="col-6">
                             <button type="button" class="btn btn-primary" @click=${this.handleUpgrade}>Upgrade</button>
@@ -300,12 +299,12 @@ class OutpostSlot extends LitElement {
 
 class WorldUI extends LitElement {
     static styles = shared_styles;
-    static world; // World object
 
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
+        this.world = new World();
 
+        this.attachShadow({ mode: 'open' });
         this.render();
     }
 
@@ -315,7 +314,7 @@ class WorldUI extends LitElement {
             <div style="height: 30%;">
                 <h3>World</h3>
                 <div class="container" style="padding: 10px; height: 100%;">
-                    Day ${WorldUI.world.day} Week ${WorldUI.world.week} 
+                    Day ${this.world.day} Week ${this.world.week} 
                 </div>
             </div>
         `;
@@ -332,18 +331,18 @@ class WorldUI extends LitElement {
 
 class PlayersUI extends LitElement {
     static styles = shared_styles;
-    static world; // World object
 
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
+        this.world = new World();
 
+        this.attachShadow({ mode: 'open' });
         this.render();
     }
 
     render() {
         // TODO: sort players
-        const players = Object.values(PlayersUI.world.players);
+        const players = Object.values(this.world.players);
 
         players.sort((a, b) => {
             return b.population - a.population;
@@ -363,15 +362,9 @@ class PlayersUI extends LitElement {
 }
 
 
-export function buildUI(world, player) {
-    BuildingSlot.owner = player
-    WorldUI.world = world
-    PlayersUI.world = world
+customElements.define('header-ui', HeaderUI);
+customElements.define('building-slot', BuildingSlot);
+customElements.define('outpost-slot', OutpostSlot);
 
-    customElements.define('header-ui', HeaderUI);
-    customElements.define('building-slot', BuildingSlot);
-    customElements.define('outpost-slot', OutpostSlot);
-
-    customElements.define('world-ui', WorldUI);
-    customElements.define('players-ui', PlayersUI);
-}
+customElements.define('world-ui', WorldUI);
+customElements.define('players-ui', PlayersUI);

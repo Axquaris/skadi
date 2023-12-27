@@ -1,4 +1,4 @@
-import { Core } from "./Building.js";
+import { Building, Core } from "./Building.js";
 import { ResourceVec } from "./ResourceVec.js";
 
 
@@ -11,15 +11,41 @@ export class Player {
     static resourcePerPop = new ResourceVec(0, -.0035, -.002, 0, -.001, 0)
     // energy per pop: Scaled down by 10 from 13 kwh per year per person
 
-    constructor(username) {
+    constructor(id, username) {
+        this.id = id
         this.username = username
         // pop, energy, food, material, supplies, weapons
         this.resources = new ResourceVec(4000, 6000, 8000, 5000, 5000, 10)
+        this.dResources = new ResourceVec()
         this.maxResources = new ResourceVec(10000, 10000, 10000, 5000, 5000, 1000)
 
         this.core = new Core()
         this.buildings = []
         this.outposts = []
+    }
+
+    toJSON() {
+        return {
+            id: this.id,
+            username: this.username,
+            resources: this.resources,
+            dResources: this.dResources,
+            maxResources: this.maxResources,
+            core: this.core,
+            buildings: json.buildings.map(building => Building.toJSON(building)),
+            // outposts: this.outposts
+        }
+    }
+
+    static fromJSON(json) {
+        var player = new Player(json.id, json.username)
+        player.resources = ResourceVec.fromJSON(json.resources)
+        player.dResources = ResourceVec.fromJSON(json.dResources)
+        player.maxResources = ResourceVec.fromJSON(json.maxResources)
+        player.core = Building.fromJSON(json.core)
+        player.buildings = json.buildings.map(building => Building.fromJSON(building))
+        // player.outposts = json.outposts.map(outpost => Outpost.fromJSON(outpost))
+        return player
     }
     
     allocateWorkers() {
@@ -61,8 +87,7 @@ export class Player {
         this.resources = ResourceVec.add(this.resources, popConsumption)
         
         // console.log("Ending Daily Resources", this.resources)
-        var dResources = ResourceVec.subtract(this.resources, prevResources)
-        return dResources
+        self.dResources = ResourceVec.subtract(this.resources, prevResources)
     }
 
     weeklyUpdate() {

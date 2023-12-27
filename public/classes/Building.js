@@ -4,13 +4,27 @@ import { ResourceVec } from "./ResourceVec.js";
 export class Building {
     static displayName = "Building";
     static workersNeeded = 0;
-    static resourceChange = new ResourceVec(0, 0, 0, 0, 0, 0);
+    static resourceChange = new ResourceVec();
 
     constructor() {
-        this.workers = 0;
-        this.efficiency = 0;
+        this.workers = 0.;
+        this.efficiency = 0.;
+    }
 
-        this.listeners = [];
+    static fromJSON(json) {
+        console.log("Building.fromJSON", classes[json.type], json.type);
+        var building = new classes[json.type]();
+        building.workers = json.workers;
+        building.efficiency = json.efficiency;
+        return building;
+    }
+
+    static toJSON(obj) {
+        return {
+            type: this.constructor.name,
+            workers: obj.workers,
+            efficiency: obj.efficiency
+        }
     }
 
     dailyUpdate(currentResources) {
@@ -39,9 +53,7 @@ export class Building {
         var newEfficiency = workerFulfilment * resourceFulfillment;
         if (newEfficiency != this.efficiency) {
             this.efficiency = newEfficiency;
-            this.listeners.forEach(listener => {
-                listener.requestUpdate();
-            });
+            // TODO: make sure listeners are notified of this change
         }
 
         // Resource change given calculated efficiency
@@ -101,3 +113,12 @@ export class Core extends Building {
 }
 
 export var buildingClasses = [Agroponics, WellnessCenter, SupplyManufactories, WarManufactories];
+
+var classes = {
+    "Building": Building,
+    "Agroponics": Agroponics,
+    "SupplyManufactories": SupplyManufactories,
+    "WarManufactories": WarManufactories,
+    "WellnessCenter": WellnessCenter,
+    "Core": Core,
+}

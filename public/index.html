@@ -4,17 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous"> -->
-        <link rel="stylesheet" href="bootstrap.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="bootstrap.css"> -->
     <title>Skadi</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 
 <body>
-    <!-- <script type="module" src="">
-        import { LitElement, html, css } from '';
-    </script> -->
     <script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
@@ -22,49 +19,76 @@
         integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
         crossorigin="anonymous"></script>
     <script src="./client.js" type="module"></script>
-    <!-- <script src="./js/ui.js" type="module"></script> -->
 
     <!-- Lobby / Game init page -->
     <div id="lobbyPanel" style="
         display: flex;
         align-items: center;
         justify-content: center;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
       ">
-
-        <form id="usernameForm">
-            <!-- Username Input -->
-            <div>
-                <input id="usernameInput" type="text" placeholder="Username" style="
-              padding: 12px;
-              border-radius: 20px;
-              border: none;
-              background: #475569;
-              color: #cbd5e1;
-            " />
+        <div class="row" style="width: 100%;">
+            <div class="col-2">
+                <ul class="nav nav-pills flex-column" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
+                            type="button" role="tab" aria-controls="home" aria-selected="true">Home</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile"
+                            type="button" role="tab" aria-controls="profile" aria-selected="false">Profile</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact"
+                            type="button" role="tab" aria-controls="contact" aria-selected="false">Contact</button>
+                    </li>
+                </ul>
             </div>
+            <div class="col-6">
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active sink" id="home" role="tabpanel" aria-labelledby="home-tab">
 
-            <!-- Start Button -->
-            <div style="text-align: center; margin-top: 8px">
-                <button style="
-              padding: 8px 20px;
-              border-radius: 100px;
-              border: none;
-              background-image: linear-gradient(
-                to right,
-                rgb(6, 109, 212),
-                rgb(59, 130, 246)
-              );
-              color: white;
-              cursor: pointer;
-            ">
-                    Start!
-                </button>
+                    </div>
+                    <div class="tab-pane fade sink" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+
+                    </div>
+                    <div class="tab-pane fade sink" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+
+                    </div>
+                </div>
             </div>
-        </form>
+            <div class="col-4">
+                <form id="usernameForm">
+                    <!-- Username Input -->
+                    <div>
+                        <input id="usernameInput" type="text" placeholder="Username" style="
+                      padding: 12px;
+                      border-radius: 20px;
+                      border: none;
+                      background: #475569;
+                      color: #cbd5e1;
+                    " />
+                    </div>
+
+                    <!-- Start Button -->
+                    <div style="text-align: center; margin-top: 8px">
+                        <button style="
+                      padding: 8px 20px;
+                      border-radius: 100px;
+                      border: none;
+                      background-image: linear-gradient(
+                        to right,
+                        rgb(6, 109, 212),
+                        rgb(59, 130, 246)
+                      );
+                      color: white;
+                      cursor: pointer;
+                    ">
+                            Start!
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
 
@@ -74,24 +98,20 @@
 
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
-                    role="tab" aria-controls="home" aria-selected="true">Domain</button>
+                <button class="nav-link active" id="domain-tab" data-bs-toggle="tab" data-bs-target="#domain"
+                    type="button" role="tab" aria-controls="domain" aria-selected="true">Domain</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
-                    role="tab" aria-controls="profile" aria-selected="false">Trade</button>
+                <button class="nav-link" id="trade-tab" data-bs-toggle="tab" data-bs-target="#trade" type="button"
+                    role="tab" aria-controls="trade" aria-selected="false">Trade</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                    role="tab" aria-controls="contact" aria-selected="false">Military</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                    role="tab" aria-controls="contact" aria-selected="false">Policy</button>
+                <button class="nav-link" id="military-tab" data-bs-toggle="tab" data-bs-target="#military" type="button"
+                    role="tab" aria-controls="military" aria-selected="false">Military</button>
             </li>
         </ul>
         <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <div class="tab-pane fade show active" id="domain" role="tabpanel" aria-labelledby="domain-tab">
                 <!-- Domain View -->
                 <div class="row" style="padding-left: 10px; padding-top: 10px;">
                     <!-- Main body, Left column -->
@@ -165,10 +185,52 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="tab-pane fade" id="trade" role="tabpanel" aria-labelledby="trade-tab">
+                <!DOCTYPE html>
+                <div id="container"></div>
+                <script type="module">
 
+                    import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+                    // Declare the chart dimensions and margins.
+                    const width = 640;
+                    const height = 400;
+                    const marginTop = 20;
+                    const marginRight = 20;
+                    const marginBottom = 30;
+                    const marginLeft = 40;
+
+                    // Declare the x (horizontal position) scale.
+                    const x = d3.scaleLinear()
+                        .domain([0, 100])
+                        .range([marginLeft, width - marginRight]);
+
+                    // Declare the y (vertical position) scale.
+                    const y = d3.scaleLinear()
+                        .domain([0, 100])
+                        .range([height - marginBottom, marginTop]);
+
+                    // Create the SVG container.
+                    const svg = d3.create("svg")
+                        .attr("width", width)
+                        .attr("height", height);
+
+                    // Add the x-axis.
+                    svg.append("g")
+                        .attr("transform", `translate(0,${height - marginBottom})`)
+                        .call(d3.axisBottom(x));
+
+                    // Add the y-axis.
+                    svg.append("g")
+                        .attr("transform", `translate(${marginLeft},0)`)
+                        .call(d3.axisLeft(y));
+
+                    // Append the SVG element.
+                    container.append(svg.node());
+
+                </script>
             </div>
-            <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+            <div class="tab-pane fade" id="military" role="tabpanel" aria-labelledby="military-tab">
 
             </div>
         </div>

@@ -1,90 +1,108 @@
 import { Player } from "./classes/Player.js"
 import { World } from "./classes/World.js"
-import { buildUI } from "./ui-components.js"
-
+import {} from "./ui-components.js"
 
 let cfg = {
-    "port": 3000,
     "ms_per_tick": 15,
     "ticks_per_day": 50,
     "days_per_week": 7
 }
 
 const socket = io()
-const myId = socket.id
+var clientId = socket.id
 
 // ===================== //
 // Init Local Game State //
 // ===================== //
-const frontEndPlayers = {}
-const frontEndWorld = {}
+var clientWorld = new World()
 
-const player = new Player("randstr")
-const world = new World()
 
-buildUI(world, player)
+// ======== //
+// Build UI //
+// ======== //
 
 // Lobby UI element aliases
+var usernameForm = document.querySelector("#usernameForm")
 
 // Game UI element aliases
 var headerUI = document.querySelector("header-ui")
 var playersUI = document.querySelector("players-ui")
 var worldUI = document.querySelector("world-ui")
 
-
-// Recieve game state update (projectiles)
-socket.on('updateWorld', (backEndWorld) => {
-    console.log("Recieved world update", backEndWorld)
-    world.sync(backEndWorld)
-})
-
-
-// Recieve game state update (projectiles)
-socket.on('updatePlayers', (backEndPlayers) => {
-    world.updatePlayers(backEndPlayers)
-    playersUI.requestUpdate()
-})
-
-
-// ======== //
-// Build UI //
-// ======== //
 // Start game button callback
-document.querySelector('#usernameForm').addEventListener('submit', (event) => {
+usernameForm.addEventListener('submit', (event) => {
     event.preventDefault()
 
     // Change visibilities
     document.querySelector('#lobbyPanel').style.display = 'none'
     document.querySelector('#gamePanel').style.display = 'block'
 
-    player.username = document.querySelector('#usernameInput').value
-    socket.emit('initGame', player)
+    var username = document.querySelector('#usernameInput').value
+    socket.emit('initGame', username)
 })
+
+
+// ================ //
+// Socket callbacks //
+// ================ //
+socket.on('connect', () => {
+    clientId = socket.id;
+    console.log("clientId", clientId); // Now it should print the id
+    clientWorld.clientId = clientId
+});
+
+socket.on('gameStart', (serverWorld) => {
+    clientWorld.sync(serverWorld)
+    gameRunning = true
+    
+    headerUI.players = clientWorld.players[clientId]
+    playersUI.world = clientWorld
+    worldUI.world = clientWorld
+})
+
+// Recieve world state update
+socket.on('updateWorld', (serverWorld) => {
+    console.log("Recieved world update", serverWorld)
+    clientWorld.sync(serverWorld)
+})
+
+// Recieve player state update
+// socket.on('updatePlayers', (backEndPlayers) => {
+//     clientWorld.updatePlayers(backEndPlayers)
+//     playersUI.requestUpdate()
+// })
 
 
 // ============== //
 // CORE GAME LOOP //
 // ============== //
 let tick = 0
+let gameRunning = false
+
 setInterval(() => {
+    if (gameRunning) {
+        gameTick()
+    }
+}, cfg.ms_per_tick)
+
+
+function gameTick() {
+    var player = clientWorld.players[clientId]
+    
     if ((tick + 1) % cfg.ticks_per_day == 0) {
         // Day tick
-        var dResources = player.dailyUpdate()
-        world.dailyUpdate()
-
-        headerUI.updateVariables(
-            player.resources,
-            player.maxResources,
-            dResources
-        )
+        player.dailyUpdate()
+        clientWorld.dailyUpdate()
         
+        console.log("PLAYER", player)
+        headerUI.update(player)
         playersUI.requestUpdate()
         worldUI.requestUpdate()
     }
     if ((tick + 1) % (cfg.ticks_per_day * cfg.days_per_week) == 0) {
         // Week tick
         player.weeklyUpdate()
-        world.weeklyUpdate()
+        clientWorld.weeklyUpdate()
     }
 
     // Game over conditions
@@ -96,6 +114,4 @@ setInterval(() => {
     }
 
     tick++
-}, cfg.ms_per_tick)
-
-export { player }
+}

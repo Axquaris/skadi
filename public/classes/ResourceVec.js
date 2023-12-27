@@ -9,6 +9,17 @@ export class ResourceVec{
         this.weapons = weapons;
     }
 
+    static fromJSON(json) {
+        return new ResourceVec(
+            json.pop,
+            json.energy,
+            json.food,
+            json.materials,
+            json.supplies,
+            json.weapons
+        );
+    }
+
     static multiply(vec, scalar) {
         return new ResourceVec(
             vec.pop * scalar,

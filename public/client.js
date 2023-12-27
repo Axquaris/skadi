@@ -2,7 +2,7 @@ import { Player } from "./classes/Player.js"
 import { World } from "./classes/World.js"
 import { buildUI } from "./ui-components.js"
 
-let cfg = {
+const config = {
     "ms_per_tick": 15,
     "ticks_per_day": 50,
     "days_per_week": 7
@@ -51,6 +51,9 @@ socket.on('connect', () => {
     clientWorld.clientId = clientId
 });
 
+socket.on('connectionResponse', () => {
+})
+
 socket.on('gameStart', (serverWorld) => {
     clientWorld.sync(serverWorld)
     gameRunning = true
@@ -83,13 +86,13 @@ setInterval(() => {
     if (gameRunning) {
         gameTick()
     }
-}, cfg.ms_per_tick)
+}, config.ms_per_tick)
 
 
 function gameTick() {
     var player = clientWorld.players[clientId]
     
-    if ((tick + 1) % cfg.ticks_per_day == 0) {
+    if ((tick + 1) % config.ticks_per_day == 0) {
         // Day tick
         player.dailyUpdate()
         clientWorld.dailyUpdate()
@@ -98,7 +101,7 @@ function gameTick() {
         playersUI.requestUpdate()
         worldUI.requestUpdate()
     }
-    if ((tick + 1) % (cfg.ticks_per_day * cfg.days_per_week) == 0) {
+    if ((tick + 1) % (config.ticks_per_day * config.days_per_week) == 0) {
         // Week tick
         player.weeklyUpdate()
         clientWorld.weeklyUpdate()

@@ -15,13 +15,13 @@ import { workerData } from 'worker_threads';
 // ===================== //
 // Game Config Variables //
 // ===================== //
-let cfg = {
+let config = {
     "port": 3000,
     "ms_per_tick": 15,
     "ticks_per_day": 50,
     "days_per_week": 7
 }
-console.log(`Time for one year: ${cfg.ms_per_tick * cfg.ticks_per_day * cfg.days_per_week * 55 / 1000 / 60}`)
+console.log(`Time for one year: ${config.ms_per_tick * config.ticks_per_day * config.days_per_week * 55 / 1000 / 60}`)
 
 
 const app = express()
@@ -61,7 +61,7 @@ initGame()
 // Handle new connection, given socket to that player
 io.on('connection', (socket) => {
     // console.log('a user connected')
-
+    
     // io.emit('updatePlayers', backEndWorld.players) // Tell all players about joiner
 
     socket.on('initGame', (username) => {
@@ -77,6 +77,9 @@ io.on('connection', (socket) => {
         console.log(reason)
         delete backEndWorld.players[socket.id]
     })
+
+    // Respond with server config
+    // socket.emit('connectionResponse', config)
 })
 
 
@@ -93,17 +96,24 @@ setInterval(() => {
         }
         gameTick()
     }
-}, cfg.ms_per_tick)
+}, config.ms_per_tick)
 
 
 function gameTick() {
-    if ((tick + 1) % cfg.ticks_per_day === 0) {
+    if ((tick + 1) % config.ticks_per_day === 0) {
         backEndWorld.dailyUpdate()
+        for (let id in backEndWorld.players) {
+            backEndWorld.players[id].dailyUpdate()
+            // console.log(id, backEndWorld.players[id].resources)
+        }
     }
-    if ((tick + 1) % (cfg.ticks_per_day * cfg.days_per_week) === 0) {
+    if ((tick + 1) % (config.ticks_per_day * config.days_per_week) === 0) {
         // Weekly updateconsole.log(`t${tick} d${day}`)
         console.log(`Weekly update at t${tick}`)
         backEndWorld.weeklyUpdate()
+        for (let id in backEndWorld.players) {
+            backEndWorld.players[id].weeklyUpdate()
+        }
 
         io.emit('updateWorld', backEndWorld)
     }

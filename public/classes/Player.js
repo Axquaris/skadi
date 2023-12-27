@@ -87,7 +87,7 @@ export class Player {
         this.resources = ResourceVec.add(this.resources, popConsumption)
         
         // console.log("Ending Daily Resources", this.resources)
-        self.dResources = ResourceVec.subtract(this.resources, prevResources)
+        this.dResources = ResourceVec.subtract(this.resources, prevResources)
     }
 
     weeklyUpdate() {

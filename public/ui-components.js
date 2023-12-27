@@ -91,9 +91,8 @@ class HeaderUI extends LitElement {
         var c = this._currentResources.roundToInt();
         var m = this._maxResources;
         var d = this._dResources;
-        console.log("HeaderUI render", c, m, d);
 
-        const h = html`
+        return html`
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
             <div class="resources">
                 <div id="population-ui" class="resource" style="background-color: rgb(186, 108, 84);">
@@ -122,16 +121,12 @@ class HeaderUI extends LitElement {
                 </div>
             </div>
         `;
-        console.log(h)
-        return h
     }
 
     updateVariables(player) {
-        console.log("HeaderUI update", player);
         this._currentResources = player.resources.clone();
         this._maxResources = player.maxResources.clone();
         this._dResources = player.dResources.clone();
-        console.log("HeaderUI update", this._currentResources, this._maxResources, this._dResources);
         this.requestUpdate();
     }
 }

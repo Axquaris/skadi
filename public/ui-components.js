@@ -70,7 +70,29 @@ const shared_styles = css`
         padding-left: 10px;
         padding-right: 10px; /* Add horizontal padding */
     }
+
+    .progress {
+        background-color: #181f27;
+        border-style: solid;
+        border-color: #000000;
+        border-width: 1px;
+        
+    }
 `
+
+
+const resourceTypes = {
+    'pop': '#ba6c54',
+    'food': '#125d31',
+    'energy': '#b3a007',
+    'materials': '#6c3833',
+    'supplies': '#4e3b7e',
+    'weapons': '#c21319'
+};
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 
 // Define a new custom HTML element called "building-slot"
@@ -95,34 +117,20 @@ class HeaderUI extends LitElement {
         return html`
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
             <div class="resources">
-                <div id="population-ui" class="resource" style="background-color: rgb(186, 108, 84);">
-                    Pop: ${c.pop} / ${m.pop / 1000}k
-                    <span style="text-align: right; justify-content: flex-end;">${d.pop.toFixed(2)}</span>
-                </div>
-                <div id="food-ui" class="resource" style="background-color: #125d31;">
-                    Food: ${c.food} / ${m.food / 1000}k
-                    <span style="text-align: right;">${d.food.toFixed(2)}</span>
-                </div>
-                <div id="energy-ui" class="resource" style="background-color: #d3bc08;">
-                    Energy: ${c.energy} / ${m.energy / 1000}k
-                    <span style="text-align: right;">${d.energy.toFixed(2)}</span>
-                </div>
-                <div id="materials-ui" class="resource" style="background-color: #6c3833;">
-                    Materials: ${c.materials} / ${m.materials / 1000}k
-                    <span style="text-align: right;">${d.materials.toFixed(2)}</span>
-                </div>
-                <div id="supplies-ui" class="resource" style="background-color: #4e3b7e;">
-                    Supplies: ${c.supplies} / ${m.supplies / 1000}k
-                    <span style="text-align: right;">${d.supplies.toFixed(2)}</span>
-                </div>
-                <div id="weapons-ui" class="resource" style="background-color: #c21319;">
-                    Weapons: ${c.weapons} / ${m.weapons / 1000}k
-                    <span style="text-align: right;">${d.weapons.toFixed(2)}</span>
-                </div>
+                ${Object.keys(resourceTypes).map((resource) => html`
+                    <div id="${resource}-ui" class="resource" style="background-color: ${resourceTypes[resource]};">
+                        ${capitalizeFirstLetter(resource)}:
+                        <span style="text-align: right;">${d[resource].toFixed(2)}</span>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="${c[resource]}" aria-valuemin="0" aria-valuemax="${m[resource]}" style="width: ${c[resource]/m[resource]*100}%; background-color: ${resourceTypes[resource]};">${c[resource]} / ${m[resource] / 1000}k</div>
+                        </div>
+                    </div>
+                `)}
             </div>
         `;
     }
 
+    
     updateVariables(player) {
         this._currentResources = player.resources.clone();
         this._maxResources = player.maxResources.clone();

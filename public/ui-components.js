@@ -1,9 +1,9 @@
 import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js';
 
-import { buildingClasses, Building } from "./classes/Building.js";
 import { World } from "./classes/World.js";
-import { Player } from './classes/Player.js';
+import { Sector, buildingOptions, sectorTypes } from "./classes/Sectors.js";
 import { ResourceVec } from "./classes/ResourceVec.js";
+import { ClientActions } from './client-actions.js';
 
 
 const shared_styles = css`
@@ -17,15 +17,15 @@ const shared_styles = css`
         border-radius: 5px;
         padding: 10px;
         margin-top: 10px;
-        height: 160px;
+        height: 200px;
         border: 1px solid #2c3e50;
     }
 
     .dashed-container {
         border-radius: 5px;
-        padding: 10px;
+        padding: 5px;
         margin-top: 10px;
-        height: 160px;
+        height: 200px;
         border: 1px dotted #2c3e50;
 
         display: flex;
@@ -37,7 +37,7 @@ const shared_styles = css`
         border-radius: 5px;
         padding: 10px;
         margin-top: 10px;
-        height: 80px;
+        height: 95px;
         border: 1px dotted #2c3e50;
 
         display: flex;
@@ -132,18 +132,28 @@ class HeaderUI extends LitElement {
 }
 
 
-class BuildingSlot extends LitElement {
+class SectorUI extends LitElement {
     static styles = shared_styles;
     static currentIdx = 0;
 
     constructor() {
         super();
-        this._player = new Player();
-        this._building = new Building();
-        this._state = "empty"
+        this.world = new World();
+
+        this._state = "empty";
+        this._idx = SectorUI.currentIdx;
+        SectorUI.currentIdx++;
 
         this.attachShadow({ mode: 'open' });
         this.render();
+    }
+
+    static get properties() {
+        return {
+            world: { type: World },
+            _state: { type: String },
+            _idx: { type: Number },
+        };
     }
 
     render() {
@@ -159,65 +169,76 @@ class BuildingSlot extends LitElement {
             return html`
                 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-6" style="padding-right: 3px;">
                         <div class="build-building">
+                            ${sectorTypes[buildingOptions[0]].resourceChange.toConvString()}
                             <button type="button" class="btn btn-primary" @click=${() => this.handleBuildX(0)}>
-                                Build ${buildingClasses[0].displayName}
+                                ${sectorTypes[buildingOptions[0]].displayName}
                             </button>
                         </div>
                         <div class="build-building">
+                            ${sectorTypes[buildingOptions[1]].resourceChange.toConvString()}
                             <button type="button" class="btn btn-primary" @click=${() => this.handleBuildX(1)}>
-                                Build ${buildingClasses[1].displayName}
+                                ${sectorTypes[buildingOptions[1]].displayName}
                             </button>
                         </div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-6" style="padding-left: 3px;">
                         <div class="build-building">
+                            ${sectorTypes[buildingOptions[2]].resourceChange.toConvString()}
                             <button type="button" class="btn btn-primary" @click=${() => this.handleBuildX(2)}>
-                                Build ${buildingClasses[2].displayName}
+                                ${sectorTypes[buildingOptions[2]].displayName}
                             </button>
                         </div>
                         <div class="build-building">
+                            ${sectorTypes[buildingOptions[3]].resourceChange.toConvString()}
                             <button type="button" class="btn btn-primary" @click=${() => this.handleBuildX(3)}>
-                                Build ${buildingClasses[3].displayName}
+                                ${sectorTypes[buildingOptions[3]].displayName}
                             </button>
                         </div>
                     </div>
                 </div>
             `;
         }
-        else {
+        else if (this._state == "built") {
+            var sector = this.world.players[this.world.clientId].sectors[this._idx];
+            var uhtml = html``;
+            if (sector.upgradeOptions.length > 0) {
+                uhtml = html`<div class="d-flex align-items-end justify-content-end">
+                    <button type="button" class="btn btn-primary" @click=${() => this.handleUpgrade(0)}>Upgrade</button>
+                </div>`
+            }
+
             return html`
                 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
                 <div class="container">
                     <div class="row">
                         <div class="col-7">
-                            <h5>${this._building.constructor.displayName}</h5>
-                            <div>Consumes:</div>
-                            <div>Produces:</div>
-                            <div>Workers: ${Math.round(this._building.workers)} / ${Math.round(this._building.constructor.workersNeeded)}</div>
+                            <h5>${sector.displayName}</h5>
+                            <div>\n${sector.resourceChange.toConvString()}</div>
+                            <div>Workers: ${Math.round(sector.workers)} / ${Math.round(sector.workersNeeded)}</div>
                         </div>
                         <div class="col-5 align-items-end justify-content-end" style="height: 100%;">
                             <div class="text-right">
-                                Efficiency: ${Math.round(this._building.efficiency * 100)}%
+                                Efficiency: ${Math.round(sector.efficiency * 100)}%
                             </div>
-                            <div class="d-flex align-items-end justify-content-end">
-                                <button type="button" class="btn btn-primary" @click=${this.handleUpgrade}>Upgrade</button>
-                            </div>
+                            ${uhtml}
                         </div>
                     </div>
                 </div>
             `;
+        } else {
+            console.log("Invalid state:", this._state)
         }
     }
 
     // Open Building logic
     handleBuild() {
-        this._state = "building";
-        this.requestUpdate();
-
         this.outsideClickListener = this.handleOutsideMouseDown.bind(this);
         document.addEventListener('mousedown', this.outsideClickListener);
+
+        this._state = "building";
+        this.requestUpdate();
     }
 
     handleOutsideMouseDown(e) {
@@ -229,18 +250,18 @@ class BuildingSlot extends LitElement {
     }
 
     // Building Logic
-    handleBuildX(button_idx) {
+    handleBuildX(buttonIdx = 0) {
         document.removeEventListener('mousedown', this.outsideClickListener);
-        this._state = "built";
         
-        this._building = new buildingClasses[button_idx]();
-        this._building.listeners.push(this);
-        this._player.buildings.push(this._building); // Append to the list
+        ClientActions.clientBuildSector(this._idx, buttonIdx);
+
+        this._state = "built";
         this.requestUpdate();
     }
 
     // Upgrade Logic
-    handleUpgrade() {
+    handleUpgrade(buttonIdx = 0) {
+        ClientActions.clientUpgradeSector(this._idx, buttonIdx);
         this.requestUpdate();
     }
 }
@@ -251,7 +272,7 @@ class OutpostSlot extends LitElement {
 
     constructor() {
         super();
-        this._state = 'empty';
+        this._outpost = 'empty';
         this.attachShadow({ mode: 'open' });
 
         this.render();
@@ -361,15 +382,9 @@ class PlayersUI extends LitElement {
 
 export function buildUI() {
     customElements.define('header-ui', HeaderUI);
-    customElements.define('building-slot', BuildingSlot);
+    customElements.define('sector-slot', SectorUI);
     customElements.define('outpost-slot', OutpostSlot);
 
     customElements.define('world-ui', WorldUI);
     customElements.define('players-ui', PlayersUI);
 }
-// customElements.define('header-ui', HeaderUI);
-// customElements.define('building-slot', BuildingSlot);
-// customElements.define('outpost-slot', OutpostSlot);
-
-// customElements.define('world-ui', WorldUI);
-// customElements.define('players-ui', PlayersUI);

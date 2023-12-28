@@ -2,6 +2,8 @@ import { Player } from "./classes/Player.js"
 import { World } from "./classes/World.js"
 import { buildUI } from "./ui-components.js"
 
+import { ClientActions } from "./client-actions.js"
+
 const config = {
     "ms_per_tick": 15,
     "ticks_per_day": 50,
@@ -26,8 +28,10 @@ var usernameForm = document.querySelector("#usernameForm")
 
 // Game UI element aliases
 var headerUI = document.querySelector("header-ui")
-var playersUI = document.querySelector("players-ui")
+var sectorUI = document.querySelectorAll("sector-slot")
+var outpostUI = document.querySelectorAll("outpost-slot")
 var worldUI = document.querySelector("world-ui")
+var playersUI = document.querySelector("players-ui")
 
 // Start game button callback
 usernameForm.addEventListener('submit', (event) => {
@@ -40,6 +44,7 @@ usernameForm.addEventListener('submit', (event) => {
     var username = document.querySelector('#usernameInput').value
     socket.emit('initGame', username)
 })
+ClientActions.socket = socket
 buildUI()
 
 // ================ //
@@ -98,6 +103,12 @@ function gameTick() {
         clientWorld.dailyUpdate()
         
         headerUI.updateVariables(player)
+        
+        sectorUI.forEach(sectorSlot => {
+            sectorSlot.update();
+        });
+        
+        // outpostUI.requestUpdate()
         playersUI.requestUpdate()
         worldUI.requestUpdate()
     }

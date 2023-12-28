@@ -6,12 +6,16 @@ export class World {
     // static clientId; // ID of the player running this client
 
     constructor(clientId = null) {
+        if (World.instance) {
+            return World.instance
+        }
         // World state variables
         this.day = 1;
         this.week = 1;
         this.players = {};
 
         this.clientId = clientId;
+        World.instance = this
     }
 
     toJSON() {

@@ -107,4 +107,26 @@ export class ResourceVec{
 
         return resourceFulfillment;
     }
+    
+    toConvString() {
+        var strlist = [];
+        for (const prop in this) {
+            if (this.hasOwnProperty(prop) && this[prop] != 0) {
+                let sign = "";
+                if (this[prop] < 0) {
+                    sign = "-";
+                } else if (this[prop] > 0) {
+                    sign = "+";
+                }
+
+                let number = Math.abs(this[prop]);
+                if (Math.round(number) != number) {
+                    number = number.toFixed(2).toString().slice(1)   ;
+                }
+                strlist.push(`${sign}${number}${prop[0]}`);
+            }
+        }
+        return strlist.join(" ");
+    }
+    
 }

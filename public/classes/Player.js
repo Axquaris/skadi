@@ -1,4 +1,4 @@
-import { Building, Core } from "./Building.js";
+import { Sector } from "./Sectors.js";
 import { ResourceVec } from "./ResourceVec.js";
 
 
@@ -19,9 +19,13 @@ export class Player {
         this.dResources = new ResourceVec()
         this.maxResources = new ResourceVec(10000, 10000, 10000, 5000, 5000, 1000)
 
-        this.core = new Core()
-        this.buildings = []
+        this.core = new Sector("built", "core")
+        this.sectors = []
         this.outposts = []
+        // Create 4 sectors
+        for (let i = 0; i < 4; i++) {
+            this.sectors.push(new Sector())
+        }
     }
     
     toJSON() {
@@ -32,7 +36,7 @@ export class Player {
             dResources: this.dResources,
             maxResources: this.maxResources,
             core: this.core.toJSON(),
-            buildings: this.buildings.map(building => building.toJSON()),
+            sectors: this.sectors.map(sector => sector.toJSON()),
             // outposts: this.outposts
         }
     }
@@ -42,31 +46,30 @@ export class Player {
         player.resources = ResourceVec.fromJSON(json.resources)
         player.dResources = ResourceVec.fromJSON(json.dResources)
         player.maxResources = ResourceVec.fromJSON(json.maxResources)
-        player.core = Building.fromJSON(json.core)
-        player.buildings = json.buildings.map(building => Building.fromJSON(building))
+        player.core = Sector.fromJSON(json.core)
+        player.sectors = json.sectors.map(sector => Sector.fromJSON(sector))
         // player.outposts = json.outposts.map(outpost => Outpost.fromJSON(outpost))
         return player
     }
     
     allocateWorkers() {
         // Determine total workers needed
-        var totalWorkersNeeded = this.core.constructor.workersNeeded;
-        this.buildings.forEach(building => {
-            totalWorkersNeeded += building.constructor.workersNeeded;
+        var totalWorkersNeeded = this.core.workersNeeded;
+        this.sectors.forEach(sector => {
+            if (sector.state == "built") totalWorkersNeeded += sector.workersNeeded;
         });
         
-        // Determine how much of the needed amt each building will be allocated (0-1)
+        // Determine how much of the needed amt each sector will be allocated (0-1)
         var allocationRatio = Math.min(this.resources.pop / totalWorkersNeeded, 1);
 
         // Allocate workers
-        this.core.workers = this.core.constructor.workersNeeded * allocationRatio;
-        this.buildings.forEach(building => {
-            building.workers = building.constructor.workersNeeded * allocationRatio;
+        this.core.workers = this.core.workersNeeded * allocationRatio;
+        this.sectors.forEach(sector => {
+            if (sector.state == "built") sector.workers = sector.workersNeeded * allocationRatio;
         });
     }
 
     dailyUpdate() {
-        // console.log("Starting Daily Resources", this.resources)
         // Population Updates
         var prevResources = this.resources.clone()
 
@@ -76,22 +79,19 @@ export class Player {
         // Allocate Workers
         this.allocateWorkers()
 
-        // Building Updates
+        // sector Updates
         this.resources = this.core.dailyUpdate(this.resources)
-        this.buildings.forEach(building => {
-            this.resources = building.dailyUpdate(this.resources)
+        this.sectors.forEach(sector => {
+            this.resources = sector.dailyUpdate(this.resources)
         })
 
         // Population Consumption
         var popConsumption = ResourceVec.multiply(Player.resourcePerPop, this.resources.pop)
         this.resources = ResourceVec.add(this.resources, popConsumption)
         
-        // console.log("Ending Daily Resources", this.resources)
         this.dResources = ResourceVec.subtract(this.resources, prevResources)
     }
 
     weeklyUpdate() {
-        // console.log(this.resources)
-        // this.resources.set(0, this.resources.get(0) * (1 + Player.birthRate))
     }
 }

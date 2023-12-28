@@ -4,13 +4,7 @@ import { Server } from 'socket.io';
 
 import { World } from './public/classes/World.js';
 import { Player } from './public/classes/Player.js';
-import { workerData } from 'worker_threads';
-
-// const express = require('express')
-// const Player = require('./public/js/classes/Player.js')
-// const http = require('http')
-// const { Server } = require('socket.io')
-
+import { ClientActions } from './public/client-actions.js';
 
 // ===================== //
 // Game Config Variables //
@@ -72,6 +66,9 @@ io.on('connection', (socket) => {
         socket.emit('gameStart', backEndWorld.toJSON())  // Tell player about game start
     })
 
+    //
+    
+
     // Player action event listener: disconnecting
     socket.on('disconnect', (reason) => {
         console.log(reason)
@@ -80,6 +77,8 @@ io.on('connection', (socket) => {
 
     // Respond with server config
     // socket.emit('connectionResponse', config)
+
+    ClientActions.bindServerCallbacks(socket)
 })
 
 
@@ -104,7 +103,6 @@ function gameTick() {
         backEndWorld.dailyUpdate()
         for (let id in backEndWorld.players) {
             backEndWorld.players[id].dailyUpdate()
-            // console.log(id, backEndWorld.players[id].resources)
         }
     }
     if ((tick + 1) % (config.ticks_per_day * config.days_per_week) === 0) {

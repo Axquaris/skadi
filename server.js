@@ -15,7 +15,7 @@ let config = {
     "ticks_per_day": 50,
     "days_per_week": 7
 }
-console.log(`Time for one year: ${config.ms_per_tick * config.ticks_per_day * config.days_per_week * 55 / 1000 / 60}`)
+console.log(`Time for one year: ${config.ms_per_tick * config.ticks_per_day * config.days_per_week * 55 / 1000 / 60} mins`)
 
 
 const app = express()

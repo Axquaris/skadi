@@ -7,17 +7,23 @@ export class Player {
     static birthRate = .00035
 
     // Pop consumption
-    // pop, energy, food, material, supplies, weapons
-    static resourcePerPop = new ResourceVec(0, -.0035, -.002, 0, -.001, 0)
+    // pop, energy, food, ore, supplies, weapons
+    static resourcePerPop = new ResourceVec({
+        pop: 0, energy: -.0035, food: -.002, ore: 0, supplies: -.001, weapons: 0
+    })
     // energy per pop: Scaled down by 10 from 13 kwh per year per person
 
     constructor(id, username) {
         this.id = id
         this.username = username
-        // pop, energy, food, material, supplies, weapons
-        this.resources = new ResourceVec(4000, 6000, 8000, 5000, 5000, 10)
+        // pop, energy, food, ore, supplies, weapons
+        this.resources = new ResourceVec({
+            pop: 4000, energy: 6000, food: 8000, ore: 5000, supplies: 5000, weapons: 10
+        })
         this.dResources = new ResourceVec()
-        this.maxResources = new ResourceVec(10000, 10000, 10000, 5000, 5000, 1000)
+        this.maxResources = new ResourceVec({
+            pop: 10000, energy: 10000, food: 10000, ore: 5000, supplies: 5000, weapons: 1000
+        })
 
         this.core = new Sector("built", "core")
         this.sectors = []
@@ -72,6 +78,7 @@ export class Player {
     dailyUpdate() {
         // Population Updates
         var prevResources = this.resources.clone()
+        console.log("prevResources", prevResources)
 
         // Population Growth
         this.resources.pop *= (1 + Player.birthRate)
@@ -84,11 +91,12 @@ export class Player {
         this.sectors.forEach(sector => {
             this.resources = sector.dailyUpdate(this.resources)
         })
+        
 
         // Population Consumption
         var popConsumption = ResourceVec.multiply(Player.resourcePerPop, this.resources.pop)
         this.resources = ResourceVec.add(this.resources, popConsumption)
-        
+
         this.dResources = ResourceVec.subtract(this.resources, prevResources)
     }
 

@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Build and Run",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/dist/server.js",
+            "preLaunchTask": "npm: build",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        }
+    ]
+}

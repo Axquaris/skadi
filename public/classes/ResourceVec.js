@@ -1,78 +1,66 @@
 
+export const resourceTypes = {
+    'pop': '#ba6c54',
+    'food': '#125d31',
+    'energy': '#b3a007',
+    'ore': '#6c3833',
+    'supplies': '#4e3b7e',
+    'weapons': '#c21319'
+};
+
+
 export class ResourceVec{
-    constructor(pop = 0, energy = 0, food = 0, materials = 0, supplies = 0, weapons = 0) {
-        this.pop = pop;
-        this.energy = energy;
-        this.food = food;
-        this.materials = materials;
-        this.supplies = supplies;
-        this.weapons = weapons;
+    constructor({ pop = 0, energy = 0, food = 0, ore = 0, supplies = 0, weapons = 0 } = {}) {
+        Object.assign(this, { pop, energy, food, ore, supplies, weapons });
     }
 
     static fromJSON(json) {
-        return new ResourceVec(
-            json.pop,
-            json.energy,
-            json.food,
-            json.materials,
-            json.supplies,
-            json.weapons
-        );
+        return new ResourceVec(json);
     }
 
     static multiply(vec, scalar) {
-        return new ResourceVec(
-            vec.pop * scalar,
-            vec.energy * scalar,
-            vec.food * scalar,
-            vec.materials * scalar,
-            vec.supplies * scalar,
-            vec.weapons * scalar
-        );
+        return new ResourceVec({
+            pop: vec.pop * scalar,
+            energy: vec.energy * scalar,
+            food: vec.food * scalar,
+            ore: vec.ore * scalar,
+            supplies: vec.supplies * scalar,
+            weapons: vec.weapons * scalar
+        });
     }
 
     static add(vec, other) {
-        return new ResourceVec(
-            vec.pop + other.pop,
-            vec.energy + other.energy,
-            vec.food + other.food,
-            vec.materials + other.materials,
-            vec.supplies + other.supplies,
-            vec.weapons + other.weapons
-        );
+        return new ResourceVec({
+            pop: vec.pop + other.pop,
+            energy: vec.energy + other.energy,
+            food: vec.food + other.food,
+            ore: vec.ore + other.ore,
+            supplies: vec.supplies + other.supplies,
+            weapons: vec.weapons + other.weapons
+        });
     }
 
     static subtract(vec, other) {
-        return new ResourceVec(
-            vec.pop - other.pop,
-            vec.energy - other.energy,
-            vec.food - other.food,
-            vec.materials - other.materials,
-            vec.supplies - other.supplies,
-            vec.weapons - other.weapons
-        );
+        return new ResourceVec({
+            pop: vec.pop - other.pop,
+            energy: vec.energy - other.energy,
+            food: vec.food - other.food,
+            ore: vec.ore - other.ore,
+            supplies: vec.supplies - other.supplies,
+            weapons: vec.weapons - other.weapons
+        });
     }
 
     clone() {
-        return new ResourceVec(
-            this.pop,
-            this.energy,
-            this.food,
-            this.materials,
-            this.supplies,
-            this.weapons
-        );
+        return new ResourceVec(this);
     }
 
     roundToInt() {
-        return new ResourceVec(
-            Math.round(this.pop),
-            Math.round(this.energy),
-            Math.round(this.food),
-            Math.round(this.materials),
-            Math.round(this.supplies),
-            Math.round(this.weapons)
-        );
+        const roundedValues = Object.entries(this).reduce((acc, [key, value]) => {
+            acc[key] = Math.round(value);
+            return acc;
+        }, {});
+        return new ResourceVec(roundedValues);
     }
 
     /**
@@ -130,3 +118,4 @@ export class ResourceVec{
     }
     
 }
+

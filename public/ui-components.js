@@ -4,6 +4,7 @@ import { World } from "./classes/World.js";
 import { Sector, buildingOptions, sectorTypes } from "./classes/Sectors.js";
 import { ResourceVec } from "./classes/ResourceVec.js";
 import { ClientActions } from './client-actions.js';
+import { resourceTypes } from './classes/ResourceVec.js';
 
 
 const shared_styles = css`
@@ -49,7 +50,6 @@ const shared_styles = css`
         display: flex;
         justify-content: space-around;
         background-color: #212a35;
-        color: #181f27;
         /* Darker background color */
         padding: 2px;
         font-size: 18px;
@@ -60,7 +60,6 @@ const shared_styles = css`
         padding: 2px;
         padding-left: 8px;
         border: 1px solid #2c3e50;
-        /* Background color of body */
         border-radius: 10px;
         margin: 2px;
     }
@@ -73,22 +72,10 @@ const shared_styles = css`
 
     .progress {
         background-color: #181f27;
-        border-style: solid;
-        border-color: #000000;
-        border-width: 1px;
-        
+        // border: 1px solid #000000;
     }
 `
 
-
-const resourceTypes = {
-    'pop': '#ba6c54',
-    'food': '#125d31',
-    'energy': '#b3a007',
-    'materials': '#6c3833',
-    'supplies': '#4e3b7e',
-    'weapons': '#c21319'
-};
 
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -118,9 +105,9 @@ class HeaderUI extends LitElement {
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
             <div class="resources">
                 ${Object.keys(resourceTypes).map((resource) => html`
-                    <div id="${resource}-ui" class="resource" style="background-color: ${resourceTypes[resource]};">
+                    <div id="${resource}-ui" class="resource">
                         ${capitalizeFirstLetter(resource)}:
-                        <span style="text-align: right;">${d[resource].toFixed(2)}</span>
+                        <span style="text-align: right; ">${d[resource].toFixed(2)}</span>
                         <div class="progress">
                             <div class="progress-bar" role="progressbar" aria-valuenow="${c[resource]}" aria-valuemin="0" aria-valuemax="${m[resource]}" style="width: ${c[resource]/m[resource]*100}%; background-color: ${resourceTypes[resource]};">${c[resource]} / ${m[resource] / 1000}k</div>
                         </div>

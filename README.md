@@ -28,12 +28,19 @@ Networking: https://socket.io/docs/v4/tutorial/step-1
 
 Server: https://expressjs.com/
 
-Bootstral: https://getbootstrap.com/docs/5.2/getting-started/introduction/
+Bootstrap: https://getbootstrap.com/docs/5.2/getting-started/introduction/
 
 ### Potential libs
+D3 for economy charts, maybe even map: https://d3js.org/ 
+<!-- https://svelte.dev/repl/ff3bf3c7ca454d53913c0c33af0c1250?version=3.59.1 -->
+<!-- https://docs.pmnd.rs/react-three-fiber/tutorials/basic-animations -->
+
 https://www.frontendplanet.com/top-ui-component-libraries/
 
 https://www.agnosticui.com/
+
+Free bootstrap themes: https://bootswatch.com/
+<!-- https://bootswatch.com/quartz/ -->
 
 ### Inspirations
 https://madewithsvelte.com/game
@@ -41,3 +48,6 @@ https://madewithsvelte.com/game
 https://github.com/woutdp/geoquest
 
 Simple mp game dev: https://www.youtube.com/watch?v=HXquxWtE5vA&ab_channel=ChrisCourses
+
+MP architechture diagrams: https://the-meanwhale.web.app/?p=stop_engine
+

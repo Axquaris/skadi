@@ -2,6 +2,7 @@ import { ResourceVec } from "./ResourceVec.js";
 
 
 export const buildingOptions = ["agroponics", "supply_m", "war_m", "welness"];
+// ResourceVec: pop, energy, food, ore, supplies, weapons
 export const sectorTypes = {
     "empty": {
         displayName: "Empty",
@@ -12,37 +13,37 @@ export const sectorTypes = {
     "agroponics": {
         displayName: "Agroponics",
         workersNeeded: 1800,
-        resourceChange: new ResourceVec(-0.03, -35, 30, -10, -10, 0),
+        resourceChange: new ResourceVec({ pop: -0.03, energy: -35, food: 30, supplies: -10 }),
         upgradeOptions: ["agroponics2"],
     },
     "agroponics2": {
         displayName: "Agroponics 2",
         workersNeeded: 2200,
-        resourceChange: new ResourceVec(-0.06, -70, 60, -20, -15, 0),
+        resourceChange: new ResourceVec({ pop: -0.03, energy: -35, food: 60, supplies: -15 }),
         upgradeOptions: [],
     },
     "supply_m": {
         displayName: "Supply Manufactories",
         workersNeeded: 2200,
-        resourceChange: new ResourceVec(-0.06, -40, 0, -10, 40, 0),
+        resourceChange: new ResourceVec({ pop: -0.06, energy: -40, ore: -10, supplies: 40 }),
         upgradeOptions: ["war_m"],
     },
     "war_m": {
         displayName: "War Manufactories",
         workersNeeded: 2200,
-        resourceChange: new ResourceVec(-0.06, -40, 0, -10, 0, 10),
+        resourceChange: new ResourceVec({ pop: -0.06, energy: -40, ore: -10, weapons: 10 }),
         upgradeOptions: ["supply_m"],
     },
     "welness": {
         displayName: "Wellness Center",
         workersNeeded: 600,
-        resourceChange: new ResourceVec(2, -40, -8, 0, -5, 0),
+        resourceChange: new ResourceVec({ pop: 2, energy: -40, food: -8, supplies: -5 }),
         upgradeOptions: [],
     },
     "core": {
         displayName: "Core",
         workersNeeded: 1200,
-        resourceChange: new ResourceVec(-0.06, 80, 0, 0, -5, 0),
+        resourceChange: new ResourceVec({ pop: -0.06, energy: 80, supplies: -5}),
         upgradeOptions: [],
     }
 };

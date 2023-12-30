@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Market Calculations Test Bed</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .slider {
+            width: 180px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        body {
+            background-color: #222;
+            color: #fff;
+        }
+        
+        h1 {
+            color: #fff;
+        }
+        
+        .slider-input {
+            background-color: #333;
+            color: #fff;
+        }
+        
+        #plot {
+            background-color: #333;
+        }
+        
+        circle {
+            fill: #00f;
+        }
+        
+        .slider-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Market Calculations Test Bed</h1>
+    
+    <div class="slider-container">
+        <div class="slider">
+            <label for="slider1">Player 1 Buying Amount:</label>
+            <input type="range" min="0" max="100" value="10" class="slider-input" id="slider1">
+            <span id="slider1-value"></span>
+        </div>
+        
+        <div class="slider">
+            <label for="slider2">Player 2 Buying Amount:</label>
+            <input type="range" min="0" max="100" value="30" class="slider-input" id="slider2">
+            <span id="slider2-value"></span>
+        </div>
+        
+        <div class="slider">
+            <label for="slider3">Player 3 Selling Amount:</label>
+            <input type="range" min="0" max="100" value="20" class="slider-input" id="slider3">
+            <span id="slider3-value"></span>
+        </div>
+        
+        <div class="slider">
+            <label for="slider4">Player 4 Selling Amount:</label>
+            <input type="range" min="0" max="100" value="20" class="slider-input" id="slider4">
+            <span id="slider4-value"></span>
+        </div>
+        
+        <div class="slider">
+            <label for="slider5">Player 1 Buying Price:</label>
+            <input type="range" min="0" max="100" value="80" class="slider-input" id="slider5">
+            <span id="slider5-value"></span>
+        </div>
+        
+        <div class="slider">
+            <label for="slider6">Player 2 Buying Price:</label>
+            <input type="range" min="0" max="100" value="60" class="slider-input" id="slider6">
+            <span id="slider6-value"></span>
+        </div>
+        
+        <div class="slider">
+            <label for="slider7">Player 3 Selling Price:</label>
+            <input type="range" min="0" max="100" value="60" class="slider-input" id="slider7">
+            <span id="slider7-value"></span>
+        </div>
+        
+        <div class="slider">
+            <label for="slider8">Player 4 Selling Price:</label>
+            <input type="range" min="0" max="100" value="20" class="slider-input" id="slider8">
+            <span id="slider8-value"></span>
+        </div>
+    </div>
+    
+    <svg id="plot"></svg>
+    
+    <script type="module">
+        import { html, css, LitElement } from 'lit';
+        import { customElement, property } from 'lit/decorators.js';
+
+        @customElement('market-calculations')
+        class MarketCalculations extends LitElement {
+            @property({ type: Array }) sliderValues = [];
+
+            static styles = css`
+                .slider {
+                    width: 180px;
+                    margin-bottom: 10px;
+                    display: flex;
+                    flex-wrap: wrap;
+                }
+                
+                body {
+                    background-color: #222;
+                    color: #fff;
+                }
+                
+                h1 {
+                    color: #fff;
+                }
+                
+                .slider-input {
+                    background-color: #333;
+                    color: #fff;
+                }
+                
+                #plot {
+                    background-color: #333;
+                }
+                
+                circle {
+                    fill: #00f;
+                }
+                
+                .slider-container {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    grid-gap: 10px;
+                }
+            `;
+
+            constructor() {
+                super();
+                this.sliderValues = [10, 30, 20, 20, 80, 60, 60, 20];
+            }
+
+            render() {
+                return html`
+                    <h1>Market Calculations Test Bed</h1>
+                    
+                    <div class="slider-container">
+                        <div class="slider">
+                            <label for="slider1">Player 1 Buying Amount:</label>
+                            <input type="range" min="0" max="100" value="${this.sliderValues[0]}" class="slider-input" id="slider1">
+                            <span id="slider1-value"></span>
+                        </div>
+                        
+                        <div class="slider">
+                            <label for="slider2">Player 2 Buying Amount:</label>
+                            <input type="range" min="0" max="100" value="${this.sliderValues[1]}" class="slider-input" id="slider2">
+                            <span id="slider2-value"></span>
+                        </div>
+                        
+                        <div class="slider">
+                            <label for="slider3">Player 3 Selling Amount:</label>
+                            <input type="range" min="0" max="100" value="${this.sliderValues[2]}" class="slider-input" id="slider3">
+                            <span id="slider3-value"></span>
+                        </div>
+                        
+                        <div class="slider">
+                            <label for="slider4">Player 4 Selling Amount:</label>
+                            <input type="range" min="0" max="100" value="${this.sliderValues[3]}" class="slider-input" id="slider4">
+                            <span id="slider4-value"></span>
+                        </div>
+                        
+                        <div class="slider">
+                            <label for="slider5">Player 1 Buying Price:</label>
+                            <input type="range" min="0" max="100" value="${this.sliderValues[4]}" class="slider-input" id="slider5">
+                            <span id="slider5-value"></span>
+                        </div>
+                        
+                        <div class="slider">
+                            <label for="slider6">Player 2 Buying Price:</label>
+                            <input type="range" min="0" max="100" value="${this.sliderValues[5]}" class="slider-input" id="slider6">
+                            <span id="slider6-value"></span>
+                        </div>
+                        
+                        <div class="slider">
+                            <label for="slider7">Player 3 Selling Price:</label>
+                            <input type="range" min="0" max="100" value="${this.sliderValues[6]}" class="slider-input" id="slider7">
+                            <span id="slider7-value"></span>
+                        </div>
+                        
+                        <div class="slider">
+                            <label for="slider8">Player 4 Selling Price:</label>
+                            <input type="range" min="0" max="100" value="${this.sliderValues[7]}" class="slider-input" id="slider8">
+                            <span id="slider8-value"></span>
+                        </div>
+                    </div>
+                    
+                    <svg id="plot"></svg>
+                `;
+            }
+
+            firstUpdated() {
+                const sliders = this.shadowRoot.querySelectorAll('.slider-input');
+
+                sliders.forEach((slider, index) => {
+                    slider.addEventListener('input', () => {
+                        this.sliderValues[index] = parseInt(slider.value);
+                        this.requestUpdate();
+                        this.updatePlot();
+                    });
+                });
+
+                this.updatePlot();
+            }
+
+            updatePlot() {
+                const svgPlot = this.shadowRoot.getElementById('plot');
+                const plotWidth = 400;
+                const plotHeight = 300;
+
+                // Clear the plot
+                while (svgPlot.firstChild) {
+                    svgPlot.firstChild.remove();
+                }
+
+                const boxes = [];
+
+                const getHeight = (amt) => {
+                    return (amt / 100) * plotHeight;
+                };
+
+                const getWidth = (price) => {
+                    return (price / 100) * plotWidth;
+                };
+
+                const buyers = [
+                    { amt: this.sliderValues[0], price: this.sliderValues[4], color: 'rgb(65, 86, 190)' },
+                    { amt: this.sliderValues[1], price: this.sliderValues[5], color: 'rgb(59, 123, 94)' }
+                ];
+
+                const sellers = [
+                    { amt: this.sliderValues[2], price: this.sliderValues[6], color: 'rgb(203, 163, 113)' },
+                    { amt: this.sliderValues[3], price: this.sliderValues[7], color: 'rgb(170, 60, 55)' }
+                ];
+
+                buyers.sort((a, b) => (a.price > b.price) ? -1 : 1);
+                sellers.sort((a, b) => (a.price > b.price) ? -1 : 1);
+
+                let bottom = plotHeight;
+
+                for (const buyer of buyers) {
+                    const height = getHeight(buyer.amt);
+                    const width = getWidth(buyer.price);
+                    bottom -= height;
+                    const x = 0;
+                    const y = bottom;
+                    boxes.push({ x, y, width, height, color: buyer.color });
+                }
+
+                bottom = plotHeight;
+
+                for (const seller of sellers) {
+                    const height = getHeight(seller.amt);
+                    const width = getWidth(seller.price);
+                    bottom -= height;
+                    const x = (plotWidth - width);
+                    const y = bottom;
+                    boxes.push({ x, y, width, height, color: seller.color });
+                }
+
+                // Plot the slider values
+                boxes.forEach(box => {
+                    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    rect.setAttribute('x', box.x);
+                    rect.setAttribute('y', box.y);
+                    rect.setAttribute('width', box.width);
+                    rect.setAttribute('height', box.height);
+                    rect.setAttribute('fill', box.color);
+                    rect.setAttribute('stroke', 'black');
+                    rect.setAttribute('stroke-width', 1);
+                    rect.setAttribute('opacity', 0.5);
+                    svgPlot.appendChild(rect);
+                });
+            }
+        }
+
+        const marketCalculations = new MarketCalculations();
+        document.body.appendChild(marketCalculations);
+    </script>
+</body>
+</html>

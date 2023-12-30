@@ -82,25 +82,39 @@
         
         <div class="slider">
             <label for="slider7">Player 3 Selling Price:</label>
-            <input type="range" min="0" max="100" value="60" class="slider-input" id="slider7">
+            <input type="range" min="0" max="100" value="40" class="slider-input" id="slider7">
             <span id="slider7-value"></span>
         </div>
         
         <div class="slider">
             <label for="slider8">Player 4 Selling Price:</label>
-            <input type="range" min="0" max="100" value="20" class="slider-input" id="slider8">
+            <input type="range" min="0" max="100" value="80" class="slider-input" id="slider8">
             <span id="slider8-value"></span>
         </div>
     </div>
     
     <svg id="plot"></svg>
     
-    <script>
+    <script type="module">
+        import { updatePlot } from './trade_equilibrium.js';
+
         // Get the slider elements
         var sliders = document.querySelectorAll('.slider-input');
         
         // Create an array to store the slider values
         var sliderValues = [];
+
+        function sliderValuesToTrades(sliderValues) {
+            var trades = [
+                // Buyers
+                { "amt": sliderValues[0], "price": sliderValues[4], "color": "rgb(65, 86, 190)", },
+                { "amt": sliderValues[1], "price": sliderValues[5], "color": "rgb(59, 123, 94)" },
+                // Sellers
+                { "amt": -sliderValues[2], "price": sliderValues[6], "color": "rgb(203, 163, 113)" },
+                { "amt": -sliderValues[3], "price": sliderValues[7], "color": "rgb(170, 60, 55)" }
+            ];
+            return trades;
+        }
         
         // Initialize the slider values
         sliders.forEach(function(slider) {
@@ -111,119 +125,14 @@
         sliders.forEach(function(slider, index) {
             slider.addEventListener('input', function() {
                 sliderValues[index] = parseInt(this.value);
-                updatePlot();
+                updatePlot(sliderValuesToTrades(sliderValues));
             });
         });
         
-        plotWidth = 400
-        plotHeight = 300
         
-        // Create the plot
-        var svg_plot = d3.select('#plot')
-            .attr('width', plotWidth)
-            .attr('height', plotHeight);
-
-        // // Create the x-scale
-        // let xScale = d3.scaleLinear()
-        //     .domain([0, 100])
-        //     .range([plotWidth*.1, plotWidth*.9]);
-        
-        // // Create the y-scale
-        // let yScale = d3.scaleLinear()
-        //     .domain([0, 100])
-        //     .range([plotHeight*.9, plotHeight*.1]);
-        
-        // // Create the x-axis
-        // let xAxis = d3.axisBottom(xScale);
-        // svg_plot.append('g')
-        //     .attr('transform', `translate(0,${plotHeight*.9})`)
-        //     .call(xAxis)
-        //     .append('text')
-        //     .attr('x', plotWidth / 2)
-        //     .attr('y', 30) // Adjust as needed
-        //     .attr('fill', '#000')
-        //     .text('X-Axis Label');
-
-        // // Create the y-axis
-        // let yAxis = d3.axisLeft(yScale);
-        // svg_plot.append('g')
-        //     .call(yAxis)
-        //     .append('text')
-        //     .attr('transform', 'rotate(-90)')
-        //     .attr('transform', `translate(${plotWidth*.1}, 0)`)
-        //     .attr('y', -30) // Adjust as needed
-        //     .attr('x', -plotHeight / 2)
-        //     .attr('fill', '#000')
-        //     .text('Y-Axis Label');
-
-        var colors = ['purple', 'teal', 'magenta', 'cyan'];
-        
-        function updatePlot() {
-            // Clear the plot
-            svg_plot.selectAll('rect').remove();
-
-            trades = [];
-            
-            // Quick utils
-            function getHeight(amt) {
-                return amt / 100 * plotHeight;
-            }
-
-            function getWidth(price) {
-                return price / 100 * plotWidth;
-            }
-
-            // Buyers
-            buyers = [
-                {"amt": sliderValues[0], "price": sliderValues[4], "color": "rgb(65, 86, 190)"},
-                {"amt": sliderValues[1], "price": sliderValues[5], "color": "rgb(59, 123, 94)"}
-            ];
-            // Sellers
-            sellers = [
-                {"amt": sliderValues[2], "price": sliderValues[6], "color": "rgb(203, 163, 113)"},
-                {"amt": sliderValues[3], "price": sliderValues[7], "color": "rgb(170, 60, 55)"}
-            ];
-            buyers.sort((a, b) => (a.price > b.price) ? -1 : 1);
-            sellers.sort((a, b) => (a.price > b.price) ? -1 : 1);
-
-            var bottom = plotHeight;
-            var boxes = [];
-            for (let buyer of buyers) {
-                var height = getHeight(buyer.amt);
-                var width = getWidth(buyer.price);
-                bottom -= height;
-                var x = 0;
-                var y = bottom;
-                boxes.push({ x, y, width, height, color: buyer.color });
-
-            }
-            bottom = plotHeight;
-            for (let seller of sellers) {
-                var height = getHeight(seller.amt);
-                var width = getWidth(seller.price);
-                bottom -= height;
-                var x = (plotWidth - width);
-                var y = bottom;
-                boxes.push({ x, y, width, height, color: seller.color });
-            }
-            
-            // Plot the slider values
-            svg_plot.selectAll('rect')
-                .data(boxes)
-                .enter()
-                .append('rect')
-                .attr('x', function(d) { return d.x; })
-                .attr('y', function(d) { return d.y; })
-                .attr('width', function(d) { return d.width; })
-                .attr('height', function(d) { return d.height; })
-                .attr('fill', function(d) { return d.color; })
-                .attr('stroke', 'black')
-                .attr('stroke-width', 1)
-                .attr('opacity', 0.5);
-        }
         
         // Initial plot update
-        updatePlot();
+        updatePlot(sliderValuesToTrades(sliderValues));
     </script>
 </body>
 </html>

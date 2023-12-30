@@ -367,7 +367,7 @@ class PlayersUI extends LitElement {
                 <h3>Players</h3>
                 <div class="container" style="padding: 10px; height: 100%;">
                     ${players.map(player => html`
-                        <div>${player.username}: ${Math.round(player.resources.pop)} pop</div>
+                        <div><span style="color: ${player.color};">${player.username}</span>: ${Math.round(player.resources.pop)} pop</div>
                     `)}
                 </div>
             </div>

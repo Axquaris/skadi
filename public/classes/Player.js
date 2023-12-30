@@ -13,9 +13,11 @@ export class Player {
     })
     // energy per pop: Scaled down by 10 from 13 kwh per year per person
 
-    constructor(id, username) {
+    constructor(id, username, color) {
         this.id = id
         this.username = username
+        this.color = color
+
         // pop, energy, food, ore, supplies, weapons
         this.resources = new ResourceVec({
             pop: 4000, energy: 6000, food: 8000, ore: 5000, supplies: 5000, weapons: 10
@@ -28,6 +30,7 @@ export class Player {
         this.core = new Sector("built", "core")
         this.sectors = []
         this.outposts = []
+        
         // Create 4 sectors
         for (let i = 0; i < 4; i++) {
             this.sectors.push(new Sector())
@@ -38,17 +41,18 @@ export class Player {
         return {
             id: this.id,
             username: this.username,
+            color: this.color,
             resources: this.resources,
             dResources: this.dResources,
             maxResources: this.maxResources,
             core: this.core.toJSON(),
             sectors: this.sectors.map(sector => sector.toJSON()),
-            // outposts: this.outposts
+            outposts: this.outposts
         }
     }
 
     static fromJSON(json) {
-        var player = new Player(json.id, json.username)
+        var player = new Player(json.id, json.username, json.color)
         player.resources = ResourceVec.fromJSON(json.resources)
         player.dResources = ResourceVec.fromJSON(json.dResources)
         player.maxResources = ResourceVec.fromJSON(json.maxResources)
@@ -78,7 +82,6 @@ export class Player {
     dailyUpdate() {
         // Population Updates
         var prevResources = this.resources.clone()
-        console.log("prevResources", prevResources)
 
         // Population Growth
         this.resources.pop *= (1 + Player.birthRate)

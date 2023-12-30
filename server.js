@@ -15,6 +15,14 @@ let config = {
     "ticks_per_day": 50,
     "days_per_week": 7
 }
+
+let player_colors = [
+    "rgb(65, 86, 190)",
+    "rgb(59, 123, 94)",
+    "rgb(203, 163, 113)",
+    "rgb(170, 60, 55)",
+]
+
 console.log(`Time for one year: ${config.ms_per_tick * config.ticks_per_day * config.days_per_week * 55 / 1000 / 60} mins`)
 
 
@@ -51,6 +59,7 @@ initGame()
 // ==================================== //
 // Player connection & action callbacks //
 // ==================================== //
+let playerIdx = 0;
 
 // Handle new connection, given socket to that player
 io.on('connection', (socket) => {
@@ -59,15 +68,13 @@ io.on('connection', (socket) => {
     // io.emit('updatePlayers', backEndWorld.players) // Tell all players about joiner
 
     socket.on('initGame', (username) => {
-        backEndWorld.players[socket.id] = new Player(socket.id, username)
+        backEndWorld.players[socket.id] = new Player(socket.id, username, player_colors[playerIdx % player_colors.length])
+        playerIdx++;
         console.log(username, "connected", socket.id)
 
         gameRunning = true
         socket.emit('gameStart', backEndWorld.toJSON())  // Tell player about game start
     })
-
-    //
-    
 
     // Player action event listener: disconnecting
     socket.on('disconnect', (reason) => {
@@ -76,8 +83,7 @@ io.on('connection', (socket) => {
     })
 
     // Respond with server config
-    // socket.emit('connectionResponse', config)
-
+    // socket.emit('connectionResponse')
     ClientActions.bindServerCallbacks(socket)
 })
 
@@ -88,7 +94,8 @@ io.on('connection', (socket) => {
 
 setInterval(() => {
     if (gameRunning) {
-        if (backEndWorld.players.length < 1) {
+        if (Object.keys(backEndWorld.players).length < 1) {
+            console.log("No players left, ending game")
             initGame()
             gameRunning = false
             tick = 0

@@ -56,8 +56,8 @@ socket.on('connect', () => {
     clientWorld.clientId = clientId
 });
 
-socket.on('connectionResponse', () => {
-})
+// socket.on('connectionResponse', () => {
+// })
 
 socket.on('gameStart', (serverWorld) => {
     clientWorld.sync(serverWorld)

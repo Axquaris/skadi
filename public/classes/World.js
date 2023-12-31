@@ -1,4 +1,5 @@
 import { Player } from './Player.js'
+import { Market } from './Market.js'
 
 
 export class World {
@@ -7,15 +8,20 @@ export class World {
 
     constructor(clientId = null) {
         if (World.instance) {
-            return World.instance
+            return World.instance;
         }
-        // World state variables
+        // Init world state variables
+        this.reset();
+
+        this.clientId = clientId;
+        World.instance = this;
+    }
+
+    reset() {
         this.day = 1;
         this.week = 1;
         this.players = {};
-
-        this.clientId = clientId;
-        World.instance = this
+        this.market = new Market();
     }
 
     toJSON() {
@@ -27,7 +33,8 @@ export class World {
         return {
             day: this.day,
             week: this.week,
-            players: serializedPlayers
+            players: serializedPlayers,
+            market: this.market.toJSON(),
         };
     }
 
@@ -40,6 +47,8 @@ export class World {
             this.players[id] = Player.fromJSON(backEndWorld.players[id])
             console.log()
         }
+
+        this.market = Market.fromJSON(backEndWorld.market)
     }
 
     // World tick functions
@@ -50,5 +59,5 @@ export class World {
     weeklyUpdate() {
         this.day = 1
         this.week++
-    }    
+    }
 }

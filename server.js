@@ -42,24 +42,16 @@ app.get('/', (req, res) => {
 // =============== //
 // Game state vars //
 // =============== //
-let backEndWorld;
+let backEndWorld = new World();
+let playerIdx = 0;
 
 let tick = 0
 let gameRunning = false
-
-function initGame() {
-//   backEndPlayers = {}
-    tick = 0
-    backEndWorld = new World()
-}
-
-initGame()
 
 
 // ==================================== //
 // Player connection & action callbacks //
 // ==================================== //
-let playerIdx = 0;
 
 // Handle new connection, given socket to that player
 io.on('connection', (socket) => {
@@ -87,7 +79,7 @@ io.on('connection', (socket) => {
     ClientActions.bindServerCallbacks(socket)
 })
 
-
+ 
 // ============== //
 // CORE GAME LOOP //
 // ============== //
@@ -96,9 +88,10 @@ setInterval(() => {
     if (gameRunning) {
         if (Object.keys(backEndWorld.players).length < 1) {
             console.log("No players left, ending game")
-            initGame()
-            gameRunning = false
             tick = 0
+            gameRunning = false
+            playerIdx = 0
+            backEndWorld.reset()
         }
         gameTick()
     }
@@ -122,7 +115,7 @@ function gameTick() {
 
         io.emit('updateWorld', backEndWorld)
     }
-    // io.emit('updatePlayers', backEndPlayers)
+    
     tick++
 }
 

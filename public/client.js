@@ -30,6 +30,7 @@ var usernameForm = document.querySelector("#usernameForm")
 var headerUI = document.querySelector("header-ui")
 var sectorUI = document.querySelectorAll("sector-slot")
 var outpostUI = document.querySelectorAll("outpost-slot")
+var tradeUI = document.querySelector("trade-ui")
 var worldUI = document.querySelector("world-ui")
 var playersUI = document.querySelector("players-ui")
 
@@ -44,8 +45,9 @@ usernameForm.addEventListener('submit', (event) => {
     var username = document.querySelector('#usernameInput').value
     socket.emit('initGame', username)
 })
-ClientActions.socket = socket
-buildUI()
+
+ClientActions.socket = socket;
+buildUI();
 
 // ================ //
 // Socket callbacks //
@@ -102,13 +104,14 @@ function gameTick() {
         player.dailyUpdate()
         clientWorld.dailyUpdate()
         
+        // UI Updates
         headerUI.updateVariables(player)
         
         sectorUI.forEach(sectorSlot => {
             sectorSlot.update();
         });
-        
         // outpostUI.requestUpdate()
+
         playersUI.requestUpdate()
         worldUI.requestUpdate()
     }

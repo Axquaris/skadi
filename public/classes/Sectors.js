@@ -55,6 +55,8 @@ export class Sector {
         this.type = type; // see sectorTypes
 
         this.workers = 0.;
+
+        // Fraction (0-1) efficiency of production, scaled down by whatever resource need is most constraining
         this.efficiency = 0.;
     }
 
@@ -91,46 +93,60 @@ export class Sector {
         this.state = "built";
     }
 
-    dailyUpdate(currentResources) {
+    dailyUpdate(currentResources, maxResources) {
         if (this.state != "built") {
             return currentResources;
         }
         else {
-            // Amount (0-1) of workers fulfilled
-            var workerFulfilment = Math.max(Math.min(this.workers / this.workersNeeded, 1), 0);
-
-            // Hypothetical resource change given current workers
-            var resourceChange = ResourceVec.multiply(this.resourceChange, workerFulfilment);
-            if (resourceChange.energy > 0) {
-                // Energy consumption scales to a minumum of 25%
-                resourceChange.energy = this.resourceChange.energy * (1 + 3 * workerFulfilment) / 4;
-            }
-
-            // Amount (0-1) of resource needs fulfilled
-            var resourceFulfillment = 1;
+            // Resource change given 100% efficiency
+            var resourceChange = this.resourceChange;
+            // New total resources given 100% efficiency
             var newResources = ResourceVec.add(currentResources, resourceChange);
-            newResources.forEach((val, idx) => {
-                if (val < 0) {
-                    resourceChange.set(idx, 0);
-                    resourceFulfillment = Math.min(resourceFulfillment, -currentResources.get(idx) / resourceChange.get(idx));
-                    console.log("Resource Fulfillment", val, idx, currentResources, resourceChange);
+
+            // Fraction (0-1) of workers fulfilled
+            var workerFulfilment = Math.max(Math.min(this.workers / this.workersNeeded, 1), 0);
+            
+            // Fraction (0-1) of resource consumption needs fulfilled based on most constrained resource
+            var resourceFulfillment = 1;
+            newResources.forEach((key, newResourcesVal) => {
+                if (newResourcesVal < 0 && resourceChange[key] !== 0) {
+                    var keyResourceFulfillment = -currentResources[key] / resourceChange[key];
+                    resourceFulfillment = Math.min(resourceFulfillment, keyResourceFulfillment);
                 }
             });
 
-            // Percent (0-1) efficiency of production
-            var newEfficiency = workerFulfilment * resourceFulfillment;
-            if (newEfficiency != this.efficiency) {
-                this.efficiency = newEfficiency;
-            }
+            // Fraction (0-1) of production possible given available storage
+            var storageFulfillment = 1;
+            var surplusResources = ResourceVec.subtract(newResources, maxResources);
+            surplusResources.forEach((key, surplusResourcesVal) => {
+                if (surplusResourcesVal > 0 && resourceChange[key] > 0) {
+                    var keyStorageFulfillment = (maxResources[key] - currentResources[key]) / resourceChange[key];
 
+                    storageFulfillment = Math.min(storageFulfillment, keyStorageFulfillment);
+                }
+            });
+            
+            this.efficiency = Math.max(
+                Math.min(
+                    workerFulfilment,
+                    resourceFulfillment,
+                    storageFulfillment
+                ),
+                0.
+            );
+            
             // Resource change given calculated efficiency
-            resourceChange = ResourceVec.multiply(this.resourceChange, this.efficiency);
-            if (resourceChange.energy > 0) {
-                // Energy consumption scales to a minumum of 25%
-                resourceChange.energy = this.resourceChange.energy * (1 + 3 * this.efficiency) / 4;
-            }
-            newResources = ResourceVec.add(currentResources, resourceChange);
-            return newResources;
+            var actualResourceChange = ResourceVec.multiply(this.resourceChange, this.efficiency);
+
+            // TODO: deprecated this to simplify mechanics
+            // // Energy consumption scales to a minumum of 25% usage
+            // if (resourceChange.energy > 0) {
+            //     // Energy consumption scales to a minumum of 25%
+            //     resourceChange.energy = this.resourceChange.energy * (1 + 3 * this.efficiency) / 4;
+            // }
+
+            // Apply resource change
+            return ResourceVec.add(currentResources, actualResourceChange);
         }
     }
 

@@ -20,7 +20,8 @@ export class Player {
 
         // pop, energy, food, ore, supplies, weapons
         this.resources = new ResourceVec({
-            pop: 4000, energy: 6000, food: 8000, ore: 5000, supplies: 5000, weapons: 10
+            pop: 4000, energy: 10000, food: 8000, ore: 5000, supplies: 5000, weapons: 10
+            // pop: 4000, energy: 0, food: 0, ore: 0, supplies: 0, weapons: 0
         })
         this.dResources = new ResourceVec()
         this.maxResources = new ResourceVec({
@@ -90,15 +91,15 @@ export class Player {
         this.allocateWorkers()
 
         // sector Updates
-        this.resources = this.core.dailyUpdate(this.resources)
+        this.resources = this.core.dailyUpdate(this.resources, this.maxResources)
         this.sectors.forEach(sector => {
-            this.resources = sector.dailyUpdate(this.resources)
+            this.resources = sector.dailyUpdate(this.resources, this.maxResources)
         })
         
 
         // Population Consumption
-        var popConsumption = ResourceVec.multiply(Player.resourcePerPop, this.resources.pop)
-        this.resources = ResourceVec.add(this.resources, popConsumption)
+        // var popConsumption = ResourceVec.multiply(Player.resourcePerPop, this.resources.pop)
+        // this.resources = ResourceVec.add(this.resources, popConsumption)
 
         this.dResources = ResourceVec.subtract(this.resources, prevResources)
     }

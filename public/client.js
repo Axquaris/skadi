@@ -1,6 +1,6 @@
 import { Player } from "./classes/Player.js"
 import { World } from "./classes/World.js"
-import { buildUI } from "./ui-components.js"
+import { buildUI } from "./ui/ui-components.js"
 
 import { ClientActions } from "./client-actions.js"
 

@@ -10,6 +10,8 @@ export const resourceTypes = {
 
 
 export class ResourceVec{
+    static keys = ['pop', 'energy', 'food', 'ore', 'supplies', 'weapons'];
+
     constructor({ pop = 0, energy = 0, food = 0, ore = 0, supplies = 0, weapons = 0 } = {}) {
         Object.assign(this, { pop, energy, food, ore, supplies, weapons });
     }
@@ -67,13 +69,16 @@ export class ResourceVec{
      * Executes a provided callback function once for each element in the array.
      *
      * @param {Function} callback - A function to execute on each element.
-     *                             It accepts three arguments: the current element, the index of the current element, and the array itself.
+     *                             It accepts the current value.
      * @returns {undefined}
      */
     forEach(callback) {
-        for (let i = 0; i < this.length; i++) {
-            callback(this[i], i, this);
-        }
+        ResourceVec.keys.forEach(key => {
+            var out = callback(key, this[key]);
+            if (out !== undefined) {
+                this[key] = out;
+            }
+        });
     }
 
     /**
@@ -86,10 +91,10 @@ export class ResourceVec{
         var resourceFulfillment = 1;
 
         var newResources = ResourceVec.add(this, consumption);
-        newResources.forEach((val, idx) => {
+        newResources.forEach((key, val) => {
             if (val < 0) {
-                resourceChange.set(idx, 0);
-                resourceFulfillment = Math.min(resourceFulfillment, -this.get(idx) / resourceChange.get(idx));
+                resourceChange.set(key, 0);
+                resourceFulfillment = Math.min(resourceFulfillment, -this.get(key) / resourceChange.get(key));
             }
         });
 
@@ -97,25 +102,15 @@ export class ResourceVec{
     }
     
     toConvString() {
-        var strlist = [];
-        for (const prop in this) {
-            if (this.hasOwnProperty(prop) && this[prop] != 0) {
-                let sign = "";
-                if (this[prop] < 0) {
-                    sign = "-";
-                } else if (this[prop] > 0) {
-                    sign = "+";
-                }
-
-                let number = Math.abs(this[prop]);
-                if (Math.round(number) != number) {
-                    number = number.toFixed(2).toString().slice(1)   ;
-                }
-                strlist.push(`${sign}${number}${prop[0]}`);
-            }
-        }
-        return strlist.join(" ");
+        return ResourceVec.keys
+            .filter(key => this[key] !== 0)
+            .map(key => {
+                const value = this[key];
+                const sign = value > 0 ? '+' : '';
+                const number = Math.abs(value).toFixed(2).replace(/\.?0+$/, '');
+                return `${sign}${number}${key[0]}`;
+            })
+            .join(' ');
     }
-    
 }
 
